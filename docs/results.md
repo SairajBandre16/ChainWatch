@@ -3,6 +3,11 @@
 Every number quoted in the README or write-up must come from a run logged here.
 Format per entry: date, command, data, change, before, after.
 
+## R0. Test suite
+- Date: 2026-10-02. Command: `uv run pytest`.
+- 119 passed in 23.3 s (other runs on the same laptop: 14.4 s, 48.5 s; time varies with machine load).
+- Without `models/` and `data/raw/` (CI conditions): 118 passed, 1 skipped (DataCo loader test), 48.5 s.
+
 ## R1. Extraction run on the news sample (no labels yet)
 - Date: 2026-10-02
 - Data: `data/sample/news_sample.jsonl` (66 RSS items fetched 2026-10-02 from 6 feeds)
@@ -48,6 +53,13 @@ became an honest country-level link.
 
 Unlinked: "Iran" (no Iranian port in the graph) and "most global" (not a place).
 Sample is small (7 events); treat as a smoke test, not a benchmark.
+
+## R2c. Graph scenario check (Red Sea event)
+- Date: 2026-10-02. Command: `TradeGraph()` with one event at `RED_SEA` (severity 5, confidence 0.9);
+  same scenario is asserted in `tests/test_graph.py`.
+- Base route Nhava Sheva to Rotterdam: 6,464.1 nm, 19.2 days at 14 knots (via Bab-el-Mandeb and Suez).
+- Lanes exposed: 22 of 23 (only AEJEA-INNSA, Gulf to India, is not).
+- Best alternative avoiding the Red Sea: via the Cape of Good Hope, 11,003.9 nm, +4,539.8 nm, +13.5 days.
 
 ## R3. Late-delivery forecast on DataCo (time-based split)
 - Date: 2026-10-02
@@ -157,3 +169,14 @@ Why (from inspecting the flagged control days, which is diagnosis, not tuning):
 
 Any fix for these is informed by backtest data, so per the spec it would be reported as a separate,
 clearly labeled post-hoc run, never replacing this one.
+
+## R7. Backtest with qwen2.5:3b extractor (incomplete)
+- Date: 2026-10-02
+- Command: `uv run python -m chainwatch.backtest.run --extractor ollama:qwen2.5:3b --prefilter --offline`
+- Deviation from spec, stated up front: the spec says the LLM runs "on the same items" as the keyword run.
+  On a laptop CPU that is 41,937 items, so this run only extracts items whose headline names a graph
+  location (8,773 items). This filter uses no backtest outcomes, but it is a deviation and is labeled.
+- Status: **stopped after 3 of 164 days** (2019-08-25 to 2019-08-27: 95 items, 0 failures, 2 events).
+  At the observed pace (about 8 minutes per day while other work ran) the full run needs roughly 20 hours.
+  It resumes from `data/raw/backtest/qwen2.5-3b__prefilter/` (one file per finished day).
+- No lead-time or false-alarm numbers exist for this extractor yet.
