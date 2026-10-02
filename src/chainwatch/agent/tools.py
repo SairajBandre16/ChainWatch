@@ -196,11 +196,12 @@ def weather(ctx: ToolContext, args: WeatherArgs) -> dict:
 
 
 def list_lanes(ctx: ToolContext, args: ListLanesArgs) -> dict:
+    focus = None if (args.focus or "").lower() in {"", "all", "any", "none"} else args.focus
     lanes = [
         {"lane_id": lane.lane_id, "origin": lane.origin, "destination": lane.destination,
          "focus": lane.focus}
         for lane in ctx.graph.ref.lanes.values()
-        if args.focus is None or lane.focus == args.focus
+        if focus is None or lane.focus == focus
     ]  # fmt: skip
     return {"lanes": lanes}
 

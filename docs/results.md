@@ -89,3 +89,37 @@ under limitations.
 Example output (highest-risk test order): "Late-delivery risk 99% (model baseline 63%). Main drivers:
 shipping mode = First Class raises risk (+2.81 log-odds); recent late rate for this shipping mode = 0.95
 raises risk (+0.79 log-odds); scheduled shipping days = 1.00 raises risk (+0.57 log-odds)."
+
+## R5. Agent briefs: rubric on the sample scenario (development iterations)
+- Date: 2026-10-02
+- Command: `uv run python -m chainwatch.agent.run --provider ollama --model <model> --save`
+- Scenario: committed sample event store (7 events extracted by qwen2.5:3b from 2026-10-02 RSS), as_of
+  2026-10-02, all 23 lanes. Graph ground truth: 2 lanes exposed (AEJEA-NLRTM, AEJEA-INNSA, via Hormuz).
+- Prompt `agent_v1`, max 8 tool calls. Rubric scores the LLM's raw draft before guard rails.
+- Caveat: this is the only scenario and it was also used to find the bugs below, so these are
+  development numbers, not a held-out benchmark.
+
+| Run | Completed | Lane precision | Lane recall | Citation validity | Citation relevance |
+|---|---|---|---|---|---|
+| qwen2.5:3b, v0 (phrase search) | yes, but wrong | n/a (no lanes) | 0.0 | n/a | n/a |
+| qwen2.5:3b, v1 (keyword search) | no (fallback) | - | - | - | - |
+| qwen2.5:3b, v2 (tool-name actions accepted) | yes | 1.0 | 0.5 | 1.0 | 0.667 |
+| llama3.2:3b, v2 | no (fallback: budget used, no final) | - | - | - | - |
+| llama3.2:3b, v3 (3 grace turns, focus "all") | yes | 0.222 | 1.0 | 1.0 | 1.0 |
+
+What changed and why (each a generic fix found by reading the transcript, not a scenario-specific tweak):
+- v0 -> v1: qwen searched "sea trade disruption" 5 times, the exact-phrase search matched nothing, and it
+  wrote "no disruptions" while both Gulf lanes had exposure 1.0. Search now matches any keyword, and a
+  coverage guard rail adds every lane the graph finds exposed.
+- v1 -> v2: qwen then wrote `{"action": "lane_risk", ...}` instead of the `call_tool` envelope and repeated
+  it 7 times. The loop now accepts a tool name as the action.
+- v2 -> v3: llama spent all 8 calls and had no turn left to write the brief; it also asked for
+  `focus="all"`, which matched no lanes. Added 3 grace turns and treat "all" as no filter.
+
+Guard rails on the final briefs (both models, v3): 0 invented event ids; llama's 7 unexposed lanes,
+2 duplicate lanes and 4 infeasible "alternate route, 2 extra days" claims (no sea route avoids Hormuz)
+were removed and replaced by computed "hold or move urgent cargo by air" mitigations. qwen's missing
+lane AEJEA-INNSA was added. Remaining known gap: free-text summaries can still contain invented numbers
+(qwen wrote "exposure scores ranging from 0.6 to 1.0"); only structured fields are verified.
+
+Example briefs: `docs/examples/brief_{qwen2.5-3b,llama3.2-3b,deterministic}_all.{md,json}`.

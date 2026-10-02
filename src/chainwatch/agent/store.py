@@ -6,6 +6,7 @@ Backed by a JSONL file of `DisruptionEvent`s (or built in memory for tests).
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
@@ -16,6 +17,10 @@ from chainwatch.extraction.schemas import DisruptionEvent
 
 STORE_PATH = PROCESSED_DIR / "event_store.jsonl"
 SAMPLE_STORE_PATH = SAMPLE_DIR / "event_store_sample.jsonl"
+
+# Words too generic to filter on: almost every event "disrupts" "trade" at "sea".
+_FILLER = {"the", "and", "for", "with", "sea", "trade", "disruption", "disruptions", "event",
+           "events", "recent", "news", "risk", "shipping", "lane", "lanes"}  # fmt: skip
 
 
 class EventStore:
@@ -72,8 +77,12 @@ class EventStore:
         min_severity: int = 1,
         limit: int = 20,
     ) -> list[DisruptionEvent]:
-        """Filter by free text (location/summary/type), publication window and severity."""
-        needle = (text or "").lower().strip()
+        """Filter by free text (location/summary/type), publication window and severity.
+
+        Text matches if ANY keyword (3+ letters, minus filler words) appears. LLM agents tend to search
+        whole phrases like "sea trade disruption"; exact-phrase matching returned nothing for those.
+        """
+        words = [w for w in re.findall(r"[a-z]{3,}", (text or "").lower()) if w not in _FILLER]
         out = []
         for ev in self.all():
             if since and ev.published < since:
@@ -83,7 +92,7 @@ class EventStore:
             if ev.severity < min_severity:
                 continue
             haystack = f"{ev.location} {ev.summary} {ev.event_type.value}".lower()
-            if needle and needle not in haystack:
+            if words and not any(w in haystack for w in words):
                 continue
             out.append(ev)
         return out[:limit]

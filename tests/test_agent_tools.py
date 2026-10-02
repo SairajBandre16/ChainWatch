@@ -143,3 +143,9 @@ def test_event_store_roundtrip(tmp_path) -> None:
     loaded = EventStore.load(path)
     assert len(loaded) == 2 and loaded.has("a") and not loaded.has("zzz")
     assert [e.event_id for e in loaded.all()] == ["b", "a"]  # newest first
+
+
+def test_list_lanes_focus_all_means_no_filter(ctx) -> None:
+    every = call_tool(ctx, "list_lanes", {})["lanes"]
+    assert call_tool(ctx, "list_lanes", {"focus": "all"})["lanes"] == every
+    assert len(call_tool(ctx, "list_lanes", {"focus": "india_ireland"})["lanes"]) < len(every)

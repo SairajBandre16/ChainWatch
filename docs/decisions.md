@@ -65,3 +65,9 @@ Each entry: choice, alternatives, reason.
 - Choice: every tool filters events to a lookback window ending at `ToolContext.as_of`.
 - Alternatives: give tools the whole store and trust the caller.
 - Reason: the same tools power the backtest replay; this makes "no peeking at the future" structural.
+
+## D13. Plain-Python agent loop with deterministic guard rails
+- Choice: one JSON action per turn, tools as typed functions, guard rails in code, deterministic fallback brief.
+- Alternatives: LangGraph / LangChain agents; native tool-calling APIs.
+- Reason: 3B local models handle a simple JSON protocol better than nested tool schemas, the loop stays
+  inspectable, and guard rails make the output safe even when the model is weak.

@@ -106,3 +106,23 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   Class raises risk (+2.81 log-odds)".
 - SHAP explains the **model**, not the world. A big SHAP value for payment type means the model uses it,
   which led us to check the raw data and flag a likely dataset artifact.
+
+## Phase 4: Agent
+
+### Tool-calling loop without a framework
+- Each turn the model sees: the task, the tool list, and a transcript of earlier calls and results. It
+  replies with one JSON action: call a tool, or finish with a brief. Plain Python makes every step visible
+  and cacheable; LangGraph would add structure we do not need yet (decision D13).
+- **Budgets:** a cap on tool calls stops infinite loops; a few grace turns let the model still finish.
+- **Be liberal in what you accept:** small models slip on the protocol (`{"action": "lane_risk"}`). Accepting
+  obvious variants is cheaper than re-prompting.
+
+### Guard rails: trust code for facts, the LLM for words
+- The LLM is good at reading tool results and writing prose, bad at copying numbers and remembering ids.
+  So after it writes a brief, code checks it against the tools: unknown event ids are removed, lane scores
+  are recomputed, lanes with zero exposure are dropped, missing exposed lanes are added, impossible reroutes
+  are removed, and every lane gets at least one feasible mitigation.
+- **Score the raw draft, ship the grounded one.** The rubric measures what the model did by itself
+  (lane precision/recall, citation validity/relevance), while users get the corrected brief. Otherwise the
+  guard rails would hide how weak the model is.
+- **Read transcripts.** Every bug in R5 was found by reading what the agent actually did, not from a metric.
