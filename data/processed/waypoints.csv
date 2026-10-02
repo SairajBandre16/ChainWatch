@@ -21,7 +21,7 @@ ENGLISH_CHANNEL,English Channel,chokepoint,50.3,-1.0,,English Channel|Dover Stra
 NORTH_SEA,North Sea,sea_region,54.0,4.0,,North Sea
 BALTIC_SEA,Baltic Sea,sea_region,55.5,15.0,,Baltic Sea|Baltic|Danish straits
 SW_INDIAN_OCEAN,South-west Indian Ocean,sea_region,-15.0,55.0,,Indian Ocean|Mozambique Channel|Madagascar
-CAPE_OF_GOOD_HOPE,Cape of Good Hope,chokepoint,-34.8,18.5,ZA,Cape of Good Hope|the Cape|Cape route
+CAPE_OF_GOOD_HOPE,Cape of Good Hope,chokepoint,-34.8,18.5,ZA,Cape of Good Hope|Cape route|Cape Agulhas
 WEST_AFRICA_ATLANTIC,Atlantic off West Africa,sea_region,0.0,-8.0,,Gulf of Guinea|West Africa
 CANARY,Canary Islands,sea_region,28.0,-16.0,ES,Canary Islands|Canaries
 MALACCA,Strait of Malacca,chokepoint,2.5,101.2,,Strait of Malacca|Malacca Strait|Malacca

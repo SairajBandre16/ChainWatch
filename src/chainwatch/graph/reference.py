@@ -76,7 +76,8 @@ class Lane(BaseModel):
     focus: str
 
 
-@dataclass(frozen=True)
+# eq=False keeps identity hashing, so a ReferenceData can key an lru_cache.
+@dataclass(frozen=True, eq=False)
 class ReferenceData:
     ports: dict[str, Port]
     waypoints: dict[str, Waypoint]
