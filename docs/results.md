@@ -71,3 +71,21 @@ Sample is small (7 events); treat as a smoke test, not a benchmark.
 Reading: LightGBM beats the one-rule shipping-mode heuristic by +0.052 test AUC and the majority
 baseline by +0.276. Most signal comes from shipping mode and scheduled days (see SHAP, R4). DataCo is a
 retail order dataset, not maritime; this model gives the base delay risk that the graph exposure adjusts.
+
+## R4. SHAP explanations of the LightGBM forecaster
+- Date: 2026-10-02
+- Command: `uv run python -m chainwatch.forecast.explain`
+- Figures: `docs/figures/shap_importance.png`, `docs/figures/shap_beeswarm.png` (3,000 test rows)
+
+Top features by mean |SHAP| (log-odds, 5,000 random test rows): shipping mode 0.945, payment type 0.302,
+recent late rate for shipping mode 0.236, scheduled shipping days 0.236, order hour 0.208,
+destination country 0.086. Product, price, quantity and market contribute almost nothing.
+
+Sanity check against raw data (all 180,519 rows): late rate by payment type is TRANSFER 0.485 vs
+CASH 0.566, DEBIT 0.572, PAYMENT 0.575, so the payment-type effect is in the data, not a model bug.
+It has no plausible logistics cause and is likely an artifact of how DataCo was generated; this is listed
+under limitations.
+
+Example output (highest-risk test order): "Late-delivery risk 99% (model baseline 63%). Main drivers:
+shipping mode = First Class raises risk (+2.81 log-odds); recent late rate for this shipping mode = 0.95
+raises risk (+0.79 log-odds); scheduled shipping days = 1.00 raises risk (+0.57 log-odds)."

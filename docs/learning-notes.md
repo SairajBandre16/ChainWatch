@@ -88,3 +88,21 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   future labels to prove past features do not move.
 - **Smoothing:** a group with 3 orders and 3 late ones should not get rate 1.0. We use
   `(late + 20 x prior) / (n + 20)`, which shrinks small groups toward the overall rate (a Bayesian average).
+
+### Baselines and model choice
+- Always show a **baseline** next to a model. "AUC 0.78" means nothing alone; "0.78 vs 0.72 for a
+  one-line rule" tells you what the model actually adds.
+- **ROC AUC**: probability a random late order is scored above a random on-time one (0.5 = coin flip).
+  **PR-AUC**: precision/recall trade-off for the positive class; its floor is the positive rate (0.55).
+  **Brier score**: mean squared error of probabilities; rewards calibrated probabilities, lower is better.
+- **Early stopping**: LightGBM adds trees until validation loss stops improving for 100 rounds. Validation
+  picks the number of trees; the test split is used once, at the end.
+
+### SHAP explanations
+- SHAP splits one prediction into per-feature contributions that **add up exactly** to the model output
+  (in log-odds for a classifier): `logit(p) = base + sum(contributions)`. A test checks this identity.
+- **Global view:** mean |SHAP| per feature ranks what the model relies on overall.
+- **Local view:** `explain(order)` lists the top 3 contributions in plain words, e.g. "shipping mode = First
+  Class raises risk (+2.81 log-odds)".
+- SHAP explains the **model**, not the world. A big SHAP value for payment type means the model uses it,
+  which led us to check the raw data and flag a likely dataset artifact.
