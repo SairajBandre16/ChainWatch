@@ -1,0 +1,25 @@
+{
+  "params": {"lookback_days": 7, "threshold": 0.5, "window_before_days": 30, "window_after_days": 7},
+  "primary_lane": "INNSA-NLRTM",
+  "secondary_lane_focus": ["india_europe", "india_ireland"],
+  "disruptions": [
+    {
+      "id": "suez_2021",
+      "name": "Ever Given blocks the Suez Canal",
+      "onset": "2021-03-23",
+      "secondary_reference": null,
+      "target_nodes": ["SUEZ_CANAL"]
+    },
+    {
+      "id": "red_sea_2023",
+      "name": "Red Sea crisis: Houthi attacks, carriers suspend transits",
+      "onset": "2023-12-15",
+      "secondary_reference": {"label": "first attack on merchant shipping (Galaxy Leader)", "date": "2023-11-19"},
+      "target_nodes": ["RED_SEA", "BAB_EL_MANDEB", "GULF_OF_ADEN"]
+    }
+  ],
+  "control_windows": [
+    {"start": "2019-09-01", "end": "2019-09-30"},
+    {"start": "2022-09-01", "end": "2022-09-30"}
+  ]
+}
