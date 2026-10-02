@@ -12,6 +12,7 @@ from chainwatch.graph.linking import link_events_into_graph, link_location, link
     [
         ("Nhava Sheva", "IN", "INNSA", ["INNSA"], "port_code"),
         ("Somewhere", "IN", "INXXX", ["CTRY:IN"], "country"),  # hallucinated code falls through
+        ("Yanbu port", "SA", "INNSA", ["CTRY:SA"], "country"),  # real code, wrong country
         ("Strait of Hormuz", None, None, ["HORMUZ"], "alias_exact"),
         ("Port of Rotterdam", "NL", None, ["NLRTM"], "alias_exact"),
         ("Port Said", "EG", None, ["EGPSD"], "alias_exact"),  # 'port' kept when not 'port of'

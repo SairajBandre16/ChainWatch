@@ -8,8 +8,8 @@ Matching order (first hit wins; each result records which rule matched, for the 
   5. country      fall back to the country node CTRY:XX, if that country has a port in the graph
   6. none         unlinked; the event is kept but cannot touch any lane
 
-Rule 1 trusts the model's port code only when it is a real node, so a hallucinated code just falls
-through to the name-based rules.
+Rule 1 trusts the model's port code only when it is a real node AND matches the event's country
+code (if given), so a hallucinated code falls through to the name-based rules.
 """
 
 from __future__ import annotations
@@ -78,8 +78,11 @@ def link_location(
     ref: ReferenceData | None = None,
 ) -> LinkResult:
     ref = ref or default_reference()
-    if port_code and port_code in ref.ports:
-        return LinkResult(node_ids=[port_code], method="port_code")
+    # A model can invent a real-looking code (seen: "Yanbu port", SA, given INNSA = Nhava Sheva).
+    # Trust the code only if it agrees with the event's country, when one is given.
+    port = ref.ports.get(port_code) if port_code else None
+    if port is not None and (not country_code or port.country_code == country_code):
+        return LinkResult(node_ids=[port.locode], method="port_code")
 
     aliases = build_alias_table(ref)
     loc = normalize(location or "")

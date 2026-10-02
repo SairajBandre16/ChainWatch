@@ -1,0 +1,104 @@
+{
+ "splits": {
+  "train": {
+   "rows": 124604,
+   "from": "2015-01-01",
+   "to": "2016-12-30"
+  },
+  "valid": {
+   "rows": 30402,
+   "from": "2017-01-01",
+   "to": "2017-06-30"
+  },
+  "test": {
+   "rows": 24369,
+   "from": "2017-07-01",
+   "to": "2018-01-31"
+  }
+ },
+ "models": {
+  "majority": {
+   "valid": {
+    "roc_auc": 0.5,
+    "pr_auc": 0.5386,
+    "brier": 0.2486,
+    "log_loss": 0.6904,
+    "accuracy": 0.5386,
+    "n": 30402,
+    "positive_rate": 0.5386
+   },
+   "test": {
+    "roc_auc": 0.5,
+    "pr_auc": 0.5511,
+    "brier": 0.2474,
+    "log_loss": 0.6879,
+    "accuracy": 0.5511,
+    "n": 24369,
+    "positive_rate": 0.5511
+   }
+  },
+  "mode_history": {
+   "valid": {
+    "roc_auc": 0.71,
+    "pr_auc": 0.7795,
+    "brier": 0.1997,
+    "log_loss": 0.5785,
+    "accuracy": 0.6892,
+    "n": 30402,
+    "positive_rate": 0.5386
+   },
+   "test": {
+    "roc_auc": 0.7243,
+    "pr_auc": 0.7932,
+    "brier": 0.1955,
+    "log_loss": 0.5692,
+    "accuracy": 0.6956,
+    "n": 24369,
+    "positive_rate": 0.5511
+   }
+  },
+  "logreg": {
+   "valid": {
+    "roc_auc": 0.7295,
+    "pr_auc": 0.8013,
+    "brier": 0.2005,
+    "log_loss": 0.5783,
+    "accuracy": 0.6895,
+    "n": 30402,
+    "positive_rate": 0.5386
+   },
+   "test": {
+    "roc_auc": 0.7517,
+    "pr_auc": 0.8207,
+    "brier": 0.1947,
+    "log_loss": 0.5653,
+    "accuracy": 0.6954,
+    "n": 24369,
+    "positive_rate": 0.5511
+   },
+   "train_seconds": 2.4
+  },
+  "lightgbm": {
+   "valid": {
+    "roc_auc": 0.7556,
+    "pr_auc": 0.8205,
+    "brier": 0.1889,
+    "log_loss": 0.5436,
+    "accuracy": 0.7105,
+    "n": 30402,
+    "positive_rate": 0.5386
+   },
+   "test": {
+    "roc_auc": 0.776,
+    "pr_auc": 0.8389,
+    "brier": 0.1823,
+    "log_loss": 0.529,
+    "accuracy": 0.7226,
+    "n": 24369,
+    "positive_rate": 0.5511
+   },
+   "best_iteration": 92,
+   "train_seconds": 1.2
+  }
+ }
+}
