@@ -1,7 +1,7 @@
 # Progress
 Last updated: 2026-10-02
 
-## Current step: 5.1 API
+## Current step: 6.1 README
 
 ## Done
 - [x] 0 Bootstrap: repo layout, pyproject (uv, Python 3.12), config, docs stubs, smoke test; pytest + ruff pass
@@ -29,9 +29,9 @@ Last updated: 2026-10-02
 - [x] 4.3 Backtest engine: spec committed first (436013a); replay engine tested on synthetic timelines; frozen keyword run on 164 GDELT days: Suez lead 0 d, Red Sea lead >=30 d (censored), false-alarm rate 0.75 (results R6) (612374a). LLM backtest run (qwen2.5:3b, prefiltered) in progress; see Resume.
 
 ### Phase 5: Dashboard and deployment (branch `phase/5-app`)
-- [ ] 5.1 API
-- [ ] 5.2 Dashboard
-- [ ] 5.3 Packaging
+- [x] 5.1 API: FastAPI /health /events /lanes /risk /brief /backtest; 6 endpoint tests; served via uvicorn and checked with curl (a217f73)
+- [x] 5.2 Dashboard: Streamlit tabs (risk map with bundled Natural Earth land, events, brief, backtest, forecast); headless AppTest passes; started and viewed in Chrome (c0dbacd)
+- [x] 5.3 Packaging: Dockerfile builds (image 4 GB) and the container serves Streamlit on 7860; CI workflow (ruff + pytest) validated; tests pass without model/raw data (118 passed, 1 skipped); HF Space files + docs/deployment.md; NOT deployed (6ef494d)
 
 ### Phase 6: Polish (branch `phase/6-docs`)
 - [ ] 6.1 README
