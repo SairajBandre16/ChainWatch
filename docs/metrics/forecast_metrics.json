@@ -76,7 +76,7 @@
     "n": 24369,
     "positive_rate": 0.5511
    },
-   "train_seconds": 2.4
+   "train_seconds": 2.9
   },
   "lightgbm": {
    "valid": {
@@ -98,7 +98,7 @@
     "positive_rate": 0.5511
    },
    "best_iteration": 92,
-   "train_seconds": 1.2
+   "train_seconds": 1.4
   }
  }
 }

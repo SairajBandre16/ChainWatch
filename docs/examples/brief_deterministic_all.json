@@ -1,0 +1,55 @@
+{
+ "brief": {
+  "as_of": "2026-10-02",
+  "focus": null,
+  "summary": "2 of 23 lanes exposed as of 2026-10-02; highest exposure 1.00 on AEJEA-NLRTM (event on route at HORMUZ).",
+  "risk_score": 1.0,
+  "risk_level": "high",
+  "affected_lanes": [
+   {
+    "lane_id": "AEJEA-NLRTM",
+    "exposure_score": 1.0,
+    "why": "event on route at HORMUZ"
+   },
+   {
+    "lane_id": "AEJEA-INNSA",
+    "exposure_score": 1.0,
+    "why": "event on route at HORMUZ"
+   }
+  ],
+  "drivers": [
+   "severe weather at Strait of Hormuz (severity 5, confidence 1.0, 2026-10-02) [da2a8446e9f20498]",
+   "severe weather at Strait of Hormuz (severity 4, confidence 0.9, 2026-10-02) [2c1b45520987a52e]",
+   "conflict or attack at Hormuz Strait (severity 4, confidence 0.9, 2026-10-02) [28f80a974edd4105]",
+   "conflict or attack at Hormuz Strait (severity 3, confidence 1.0, 2026-10-02) [f30995bcaf09b561]",
+   "severe weather at Strait of Hormuz (severity 3, confidence 1.0, 2026-10-01) [c565c9258d91e1e0]"
+  ],
+  "mitigations": [
+   {
+    "lane_id": "AEJEA-NLRTM",
+    "action": "hold_or_air",
+    "detail": "No sea route avoids HORMUZ; consider delaying bookings or moving urgent cargo by air."
+   },
+   {
+    "lane_id": "AEJEA-INNSA",
+    "action": "hold_or_air",
+    "detail": "No sea route avoids HORMUZ; consider delaying bookings or moving urgent cargo by air."
+   }
+  ],
+  "cited_event_ids": [
+   "da2a8446e9f20498",
+   "2c1b45520987a52e",
+   "28f80a974edd4105",
+   "f30995bcaf09b561",
+   "c565c9258d91e1e0"
+  ],
+  "baseline_delay_risk": {
+   "AEJEA-NLRTM": 0.333,
+   "AEJEA-INNSA": 0.369
+  },
+  "generated_by": "deterministic",
+  "guardrail_notes": []
+ },
+ "rubric": null,
+ "steps": []
+}
