@@ -99,6 +99,10 @@ class TrainedModels:
     categories: dict[str, list[str]]
     train_rate: float
     results: dict = field(default_factory=dict)
+    # Snapshot of the training data used to score "what-if" orders (see forecast.predict).
+    defaults: dict = field(default_factory=dict)
+    country_region: dict = field(default_factory=dict)
+    history: dict = field(default_factory=dict)
 
     def predict_lgb(self, df: pd.DataFrame) -> np.ndarray:
         return self.booster.predict(to_lgb_frame(df, self.categories))
@@ -146,7 +150,28 @@ def train_all(split: fd.Split) -> TrainedModels:
         "train_seconds": round(time.perf_counter() - t0, 1),
     }
     models.results = results
+    models.defaults, models.country_region, models.history = training_snapshot(tr, train_rate)
     return models
+
+
+def training_snapshot(tr: pd.DataFrame, prior: float) -> tuple[dict, dict, dict]:
+    """Typical feature values, country -> region map, and end-of-training history rates per group.
+
+    Only training rows are used, so a what-if prediction never sees validation or test outcomes.
+    """
+    defaults = {c: tr[c].mode().iloc[0] for c in fd.CATEGORICAL}
+    defaults |= {c: float(tr[c].median()) for c in fd.NUMERIC}
+    country_region = tr.groupby("order_country")["order_region"].agg(lambda s: s.mode().iloc[0])
+    history: dict = {}
+    for name, keys in fd.HISTORY_KEYS.items():
+        grouped = tr.groupby(keys)[fd.TARGET].agg(["sum", "count"])
+        rate = (grouped["sum"] + fd.PRIOR_STRENGTH * prior) / (grouped["count"] + fd.PRIOR_STRENGTH)
+        history[name] = {
+            "rate": rate.to_dict(),
+            "n": grouped["count"].astype(float).to_dict(),
+            "prior": prior,
+        }
+    return defaults, country_region.to_dict(), history
 
 
 def save(models: TrainedModels, split: fd.Split, path: Path = METRICS_PATH) -> None:
@@ -180,9 +205,13 @@ def main() -> None:
         models = train_all(split)
         print(json.dumps({k: v["test"] for k, v in models.results.items()}, indent=1))
         return
+    # Import ourselves by package name: under `python -m`, classes defined here live in __main__,
+    # and a pickle of a __main__ class cannot be loaded from anywhere else.
+    from chainwatch.forecast import train as module
+
     split = fd.build_dataset(fd.load_dataco())
-    models = train_all(split)
-    save(models, split)
+    models = module.train_all(split)
+    module.save(models, split)
     rows = [(name, r["valid"], r["test"]) for name, r in models.results.items()]
     print(f"{'model':14} {'valid AUC':>9} {'test AUC':>9} {'test PR-AUC':>11} {'test Brier':>10}")
     for name, va, te in rows:

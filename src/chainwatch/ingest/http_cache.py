@@ -38,15 +38,26 @@ class CachedHttp:
         self.max_retries = max_retries
         self._last_request = 0.0
 
-    def _paths(self, url: str, params: dict | None) -> tuple[Path, Path]:
-        key = make_key(url=url, params=params or {})
+    def _paths(
+        self, url: str, params: dict | None, cache_extra: dict | None = None
+    ) -> tuple[Path, Path]:
+        # cache_extra changes the key without being sent (e.g. a date to cache a forecast per day).
+        key = make_key(
+            url=url, params=params or {}, **({"extra": cache_extra} if cache_extra else {})
+        )
         return self.cache_dir / f"{key}.body", self.cache_dir / f"{key}.meta.json"
 
     def is_cached(self, url: str, params: dict | None = None) -> bool:
         return self._paths(url, params)[0].exists()
 
-    def get(self, url: str, params: dict | None = None, refresh: bool = False) -> bytes:
-        body_path, meta_path = self._paths(url, params)
+    def get(
+        self,
+        url: str,
+        params: dict | None = None,
+        refresh: bool = False,
+        cache_extra: dict | None = None,
+    ) -> bytes:
+        body_path, meta_path = self._paths(url, params, cache_extra)
         if body_path.exists() and not refresh:
             return body_path.read_bytes()
         if self.offline:

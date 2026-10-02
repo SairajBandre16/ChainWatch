@@ -54,3 +54,14 @@ Each entry: choice, alternatives, reason.
   strictly before the order date; training rows whose label is still unknown at the split cutoff are dropped.
 - Alternatives: plain random split (leaks future), plain date split without purging (small leak at the boundary).
 - Reason: mirrors what a live system could actually know at prediction time.
+
+## D11. Forecaster answers "what-if" lane questions from a training snapshot
+- Choice: the agent's `delay_risk` tool builds one order row (destination country, shipping mode, typical
+  values, end-of-training history rates) and scores it with the LightGBM model.
+- Alternatives: no ML in the agent; train a maritime delay model (no free labeled maritime delay data found).
+- Reason: keeps the ML model useful in the agent while stating plainly that it is a retail-order baseline.
+
+## D12. Agent tools see only events up to `as_of`
+- Choice: every tool filters events to a lookback window ending at `ToolContext.as_of`.
+- Alternatives: give tools the whole store and trust the caller.
+- Reason: the same tools power the backtest replay; this makes "no peeking at the future" structural.
