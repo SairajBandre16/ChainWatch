@@ -1,0 +1,59 @@
+locode,name,country_code,region,lat,lon,aliases
+INNSA,Nhava Sheva (JNPT),IN,South Asia,18.95,72.95,Jawaharlal Nehru Port|JNPT|Nhava Sheva|Mumbai port
+INMUN,Mundra,IN,South Asia,22.74,69.70,Mundra Port|Adani Mundra
+INMAA,Chennai,IN,South Asia,13.10,80.30,Madras|Chennai Port
+INPAV,Pipavav,IN,South Asia,20.90,71.50,Port Pipavav
+INHZA,Hazira,IN,South Asia,21.08,72.63,Hazira Port
+INCOK,Cochin,IN,South Asia,9.97,76.27,Kochi|Cochin Port|Vallarpadam
+INTUT,Tuticorin,IN,South Asia,8.75,78.20,Thoothukudi|VOC Port
+INVTZ,Visakhapatnam,IN,South Asia,17.69,83.29,Vizag
+INCCU,Kolkata,IN,South Asia,22.55,88.30,Calcutta|Haldia
+PKKHI,Karachi,PK,South Asia,24.84,66.98,Port of Karachi
+LKCMB,Colombo,LK,South Asia,6.95,79.85,Port of Colombo
+BDCGP,Chattogram,BD,South Asia,22.31,91.80,Chittagong
+AEJEA,Jebel Ali,AE,Middle East,25.01,55.06,Dubai port|Jebel Ali Port
+AEKHL,Khalifa Port,AE,Middle East,24.81,54.65,Abu Dhabi port
+OMSLL,Salalah,OM,Middle East,16.95,54.00,Port of Salalah
+SAJED,Jeddah,SA,Middle East,21.48,39.17,Jeddah Islamic Port
+DJJIB,Djibouti,DJ,Africa,11.60,43.13,Port of Djibouti|Doraleh
+EGPSD,Port Said,EG,Africa,31.26,32.31,East Port Said|SCCT
+EGSOK,Ain Sokhna,EG,Africa,29.60,32.35,Sokhna
+ZADUR,Durban,ZA,Africa,-29.87,31.03,Port of Durban
+ZACPT,Cape Town,ZA,Africa,-33.91,18.43,Port of Cape Town
+MAPTM,Tanger Med,MA,Africa,35.89,-5.50,Tangier Med|Tanger-Med
+NLRTM,Rotterdam,NL,North Europe,51.95,4.14,Port of Rotterdam|Maasvlakte
+BEANR,Antwerp,BE,North Europe,51.27,4.33,Antwerp-Bruges|Port of Antwerp
+DEHAM,Hamburg,DE,North Europe,53.54,9.97,Port of Hamburg
+DEBRV,Bremerhaven,DE,North Europe,53.55,8.58,Bremen
+FRLEH,Le Havre,FR,North Europe,49.48,0.13,Havre
+GBFXT,Felixstowe,GB,North Europe,51.96,1.33,Port of Felixstowe
+GBLGP,London Gateway,GB,North Europe,51.50,0.47,DP World London Gateway
+GBSOU,Southampton,GB,North Europe,50.90,-1.40,Port of Southampton
+GBLIV,Liverpool,GB,North Europe,53.45,-3.02,Port of Liverpool
+IEDUB,Dublin,IE,North Europe,53.35,-6.20,Dublin Port
+IEORK,Cork,IE,North Europe,51.83,-8.32,Port of Cork|Ringaskiddy
+PLGDN,Gdansk,PL,North Europe,54.40,18.67,Gdańsk|DCT Gdansk
+ESALG,Algeciras,ES,Mediterranean,36.13,-5.44,Port of Algeciras
+ESVLC,Valencia,ES,Mediterranean,39.44,-0.32,Port of Valencia
+ESBCN,Barcelona,ES,Mediterranean,41.35,2.16,Port of Barcelona
+ITGOA,Genoa,IT,Mediterranean,44.40,8.92,Genova
+ITGIT,Gioia Tauro,IT,Mediterranean,38.44,15.90,
+GRPIR,Piraeus,GR,Mediterranean,37.94,23.63,Port of Piraeus
+MTMAR,Marsaxlokk,MT,Mediterranean,35.83,14.54,Malta Freeport
+SIKOP,Koper,SI,Mediterranean,45.55,13.73,Port of Koper
+SGSIN,Singapore,SG,East Asia,1.26,103.84,Port of Singapore|PSA Singapore
+MYPKG,Port Klang,MY,East Asia,3.00,101.39,Klang
+MYTPP,Tanjung Pelepas,MY,East Asia,1.36,103.55,PTP
+CNSHA,Shanghai,CN,East Asia,30.62,122.06,Yangshan|Port of Shanghai
+CNNGB,Ningbo-Zhoushan,CN,East Asia,29.87,121.88,Ningbo|Zhoushan
+CNSZX,Shenzhen,CN,East Asia,22.50,113.88,Yantian|Shekou
+HKHKG,Hong Kong,HK,East Asia,22.30,114.17,Kwai Tsing
+KRPUS,Busan,KR,East Asia,35.10,129.04,Pusan
+TWKHH,Kaohsiung,TW,East Asia,22.61,120.28,
+USNYC,New York/New Jersey,US,North America,40.67,-74.04,Port Newark|Port of New York
+USSAV,Savannah,US,North America,32.08,-81.09,Port of Savannah
+USBAL,Baltimore,US,North America,39.26,-76.58,Port of Baltimore
+USLAX,Los Angeles,US,North America,33.73,-118.26,Port of Los Angeles|San Pedro
+USLGB,Long Beach,US,North America,33.75,-118.21,Port of Long Beach
+PABLB,Balboa,PA,Central America,8.95,-79.57,
+PAMIT,Manzanillo (Panama),PA,Central America,9.36,-79.88,Colon

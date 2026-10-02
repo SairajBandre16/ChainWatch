@@ -45,3 +45,30 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   The failure rate is a metric, and one bad article never kills a batch.
 - **Keyword baseline:** a rules-only extractor. It doubles as the fake LLM (offline runs) and as the
   floor the real models must beat in the evaluation.
+
+## Phase 2: Knowledge graph
+
+### Why a graph
+- A trade lane (Nhava Sheva to Rotterdam) is a path through ports, sea regions and chokepoints. An event
+  at any node on that path threatens the lane. "Which lanes does this event touch?" is a graph question.
+- **Schematic network:** ~60 ports and ~35 waypoints joined by ~100 legs. Leg length is the great-circle
+  (haversine) distance between nodes. It is not a nautical chart, but distances land within about 5-10%
+  of real sailing distances, which is enough for "is the Cape detour days or weeks?" reasoning.
+- **Node kinds:** port, chokepoint, sea_region, country, event. Routing only walks `sea` edges, so
+  linking an event to two ports never creates a fake shortcut between them.
+
+### Queries
+- `lane_route`: Dijkstra shortest path by distance (`networkx.shortest_path`).
+- `alternate_routes(lane, avoid)`: remove the avoided nodes, then Yen's k-shortest simple paths
+  (`networkx.shortest_simple_paths`). Reports extra miles and extra days at 14 knots.
+- `exposed_lanes(event)`: a lane is exposed if the event touches its route, an endpoint, or (at half
+  weight) an endpoint's country.
+- `lane_exposure_score`: `1 - prod(1 - w_i)`, where `w_i = severity/5 x confidence x match weight`.
+  This treats events as independent chances of disruption: bounded in [0, 1], grows with each event,
+  and every score comes with the list of events that produced it (explainable by construction).
+
+### Linking free text to nodes
+- The LLM writes "Hormuz Strait" or "Port of Felixtowe"; the graph has `HORMUZ` and `GBFXT`.
+  Linking tries, in order: the UN/LOCODE, an exact alias, an alias inside the text (longest wins),
+  fuzzy string similarity (difflib ratio >= 0.85, catches typos), then the country node.
+- Each link records which rule fired, so the link rate can be broken down and weak rules spotted.

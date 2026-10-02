@@ -33,3 +33,13 @@ Each entry: choice, alternatives, reason.
 - Choice: `ruff format` enforces line length for code; `E501` is ignored for comments and docstrings.
 - Alternatives: hand-wrap every docstring at 100 chars.
 - Reason: standard practice with an auto-formatter; avoids churn without hurting readability.
+
+## D7. Schematic sea network with haversine leg lengths
+- Choice: hand-curated ports/waypoints/legs; leg length = great-circle distance between nodes.
+- Alternatives: real sea-routing library (e.g. searoute) or AIS-derived lanes.
+- Reason: free, offline, small and explainable; accurate enough for exposure and detour reasoning.
+
+## D8. Fuzzy matching with stdlib difflib
+- Choice: `difflib.SequenceMatcher` with a 0.85 threshold, after exact and whole-word alias rules.
+- Alternatives: rapidfuzz (faster), embeddings.
+- Reason: no extra dependency; alias lists are small (~300 strings), so speed does not matter.

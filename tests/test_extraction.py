@@ -111,11 +111,13 @@ def test_schema_rejects_bad_codes_and_ranges() -> None:
 
 
 def test_keyword_baseline() -> None:
-    out = keyword_extract("Dockworkers strike shuts Port of Rotterdam for days")
+    out = keyword_extract("Dockworkers on strike shut Port of Rotterdam for days")
     assert out["is_disruption"]
     assert out["events"][0]["event_type"] == "labor_strike"
     assert out["events"][0]["port_code"] == "NLRTM"
     assert keyword_extract("Quarterly earnings beat expectations")["is_disruption"] is False
+    drone = keyword_extract("Drone strike hits tanker in Strait of Hormuz")
+    assert drone["events"][0]["event_type"] == "conflict_or_attack"
 
 
 def test_pipeline_end_to_end_on_sample_with_fake_llm(tmp_path) -> None:
