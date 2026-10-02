@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Secrets
+.env
+
+# Data and caches (raw downloads are documented, not committed)
+data/raw/
+data/cache/
+.cache/
+
+# Models
+models/
+*.pkl
+*.joblib
+*.lgb
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
