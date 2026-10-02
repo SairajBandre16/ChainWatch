@@ -1,0 +1,4 @@
+{"news_id": "A", "is_disruption": true, "events": [{"event_type": "conflict_or_attack", "location": "Red Sea", "country_code": null, "port_code": null, "severity": 5}]}
+{"news_id": "B", "is_disruption": true, "events": [{"event_type": "labor_strike", "location": "Port of Felixstowe", "country_code": "GB", "port_code": "GBFXT", "severity": 3}]}
+{"news_id": "C", "is_disruption": false, "events": []}
+{"news_id": "D", "is_disruption": true, "events": [{"event_type": "severe_weather", "location": "Chennai", "country_code": "IN", "port_code": "INMAA", "severity": 3}]}
