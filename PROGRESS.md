@@ -1,7 +1,7 @@
 # Progress
 Last updated: 2026-10-02
 
-## Current step: 4.2 Agent + brief
+## Current step: 4.3 Backtest engine
 
 ## Done
 - [x] 0 Bootstrap: repo layout, pyproject (uv, Python 3.12), config, docs stubs, smoke test; pytest + ruff pass
@@ -24,8 +24,8 @@ Last updated: 2026-10-02
 - [x] 3.3 Explainability: exact TreeSHAP via LightGBM pred_contrib; plots in docs/figures/; `explain()` gives top-3 drivers in plain text (results R4) (93c9f11)
 
 ### Phase 4: Agent and backtest (branch `phase/4-agent-backtest`)
-- [x] 4.1 Tools: 8 typed tools (search/get event, exposed lanes, lane risk, alternate routes, ML delay risk, Open-Meteo weather, list lanes) with as_of time filter; all unit-tested
-- [ ] 4.2 Agent + brief
+- [x] 4.1 Tools: 8 typed tools (search/get event, exposed lanes, lane risk, alternate routes, ML delay risk, Open-Meteo weather, list lanes) with as_of time filter; all unit-tested (288ac13)
+- [x] 4.2 Agent + brief: plain-Python JSON tool loop, Brief schema, guard rails (citations, scores, coverage, reroute feasibility), deterministic fallback, rubric; real qwen/llama examples in docs/examples (results R5) (42199a2)
 - [ ] 4.3 Backtest engine
 
 ### Phase 5: Dashboard and deployment (branch `phase/5-app`)
@@ -74,4 +74,4 @@ Last updated: 2026-10-02
 - Local model: `qwen2.5:3b` (already installed) is the default instead of `qwen2.5:7b` from the spec. See `docs/decisions.md`.
 
 ## Resume instructions
-On branch `phase/4-agent-backtest`, start step 4.2 (tool-calling agent loop + structured brief; fake LLM run end-to-end; real-model example saved to docs/; citation check test). Model file: `uv run python -m chainwatch.forecast.train` recreates models/forecast.joblib (DataCo in data/raw/dataco/, or `download_dataco()`).
+On branch `phase/4-agent-backtest`, start step 4.3: FIRST write docs/backtest-spec.md (flag + onset definitions), commit it, THEN build the replay engine over GDELT daily event files (Suez Mar 2021, Red Sea late 2023), test on a synthetic timeline, record lead time + false-alarm rate in results. Model file: `uv run python -m chainwatch.forecast.train` recreates models/forecast.joblib (DataCo in data/raw/dataco/, or `download_dataco()`).
