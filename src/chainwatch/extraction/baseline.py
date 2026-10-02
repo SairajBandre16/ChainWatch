@@ -16,8 +16,20 @@ from chainwatch.extraction.schemas import EventType
 # Ordered: the first matching rule wins, so specific types come before generic ones.
 TYPE_RULES: list[tuple[EventType, tuple[str, ...]]] = [
     (EventType.CANAL_OR_STRAIT_BLOCKAGE, ("blocked", "blockage", "aground", "stuck in")),
-    (EventType.LABOR_STRIKE, ("strike", "walkout", "industrial action", "dockworkers")),
+    # Attacks before strikes: "drone strike" is an attack. Labor phrases avoid the bare word "strike".
     (EventType.CONFLICT_OR_ATTACK, ("attack", "missile", "houthi", "drone", "hijack", "seized")),
+    (
+        EventType.LABOR_STRIKE,
+        (
+            "workers strike",
+            "on strike",
+            "strike action",
+            "walkout",
+            "industrial action",
+            "dockworkers",
+            "union",
+        ),
+    ),  # fmt: skip
     (EventType.SEVERE_WEATHER, ("typhoon", "hurricane", "cyclone", "storm", "flood", "drought")),
     (EventType.PORT_CONGESTION, ("congestion", "backlog", "queue", "bottleneck")),
     (EventType.PORT_CLOSURE, ("closed", "closure", "shut", "suspend")),
