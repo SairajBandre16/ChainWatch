@@ -1,7 +1,7 @@
 # Progress
 Last updated: 2026-10-02
 
-## Current step: 3.1 Data prep
+## Current step: 3.3 Explainability
 
 ## Done
 - [x] 0 Bootstrap: repo layout, pyproject (uv, Python 3.12), config, docs stubs, smoke test; pytest + ruff pass
@@ -19,8 +19,8 @@ Last updated: 2026-10-02
 - [x] 2.3 Event-to-graph linking: LOCODE -> alias -> whole-word alias -> difflib fuzzy -> country fallback; link rate on sample events 0.857 (qwen, baseline), see results R2 (9b824f2)
 
 ### Phase 3: Risk forecasting (branch `phase/3-forecast`)
-- [ ] 3.1 Data prep
-- [ ] 3.2 Baselines + model
+- [x] 3.1 Data prep: DataCo downloaded from Mendeley (CC BY 4.0, checksum verified, no Kaggle login); point-in-time history features; purged time split; leakage tests pass (7e509be)
+- [x] 3.2 Baselines + model: test ROC AUC majority 0.500, shipping-mode rule 0.724, logreg 0.752, LightGBM 0.776 (results R3) (a299904)
 - [ ] 3.3 Explainability
 
 ### Phase 4: Agent and backtest (branch `phase/4-agent-backtest`)
@@ -50,4 +50,4 @@ Last updated: 2026-10-02
 - Local model: `qwen2.5:3b` (already installed) is the default instead of `qwen2.5:7b` from the spec. See `docs/decisions.md`.
 
 ## Resume instructions
-Create branch `phase/3-forecast` from main and start step 3.1 (data prep). Check `data/raw/` for the DataCo CSV first.
+On branch `phase/3-forecast`, do step 3.3 (SHAP summary plot to docs/figures/, `explain()` returning top drivers in plain text). Then merge phase 3 to main. DataCo is in data/raw/dataco/ (re-download with `download_dataco()`); model saved in models/forecast.joblib by `python -m chainwatch.forecast.train`.
