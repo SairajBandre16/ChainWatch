@@ -114,3 +114,18 @@ def test_secondary_reference_lead_time() -> None:
     result = score_disruption(d, "INNSA-NLRTM", signals)
     assert result.lead_time_days == 20
     assert result.lead_time_vs_secondary_days == (d.secondary_reference.date - first).days
+
+
+def test_replay_score_matches_graph_exposure_score() -> None:
+    from chainwatch.graph.build import TradeGraph
+    from chainwatch.graph.linking import link_event, to_graph_event
+
+    events = [ev("m1", "Suez Canal", ONSET, severity=3, conf=0.7),
+              ev("m2", "Red Sea", ONSET, severity=4, conf=0.6),
+              ev("m3", "Port of Rotterdam", ONSET, severity=2, conf=0.9)]  # fmt: skip
+    signal = replay(events, "INNSA-NLRTM", [ONSET], PARAMS, {"SUEZ_CANAL"})[0]
+    graph = TradeGraph()
+    gevs = [to_graph_event(e, link_event(e)) for e in events]
+    score, hits = graph.lane_exposure_score("INNSA-NLRTM", gevs)
+    assert signal.score == score
+    assert signal.contributing_events == [h.event_id for h in hits]

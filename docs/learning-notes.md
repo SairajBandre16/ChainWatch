@@ -126,3 +126,20 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   (lane precision/recall, citation validity/relevance), while users get the corrected brief. Otherwise the
   guard rails would hide how weak the model is.
 - **Read transcripts.** Every bug in R5 was found by reading what the agent actually did, not from a metric.
+
+## Phase 4b: Backtesting
+
+- **Write the definitions first.** `docs/backtest-spec.md` fixed onset dates, the flag threshold, windows
+  and control periods before any code ran. Otherwise it is too easy to pick a threshold that makes the
+  chart look good (that is tuning on the test set).
+- **Lead time** = onset date - first on-target warning. Positive means early. A warning only counts if it
+  is caused by an event at the right place (on target), so a random port strike does not get credit.
+- **False-alarm rate** on quiet control periods is the other half: a system that is always on never
+  misses, and is useless. Our keyword run did exactly that (0.75 false-alarm rate).
+- **Censoring:** if the lane is already flagged on the first day of the window, the lead time is "at
+  least 30 days", not "30 days". Report it that way.
+- **Independence assumption:** `1 - prod(1 - w)` assumes each event is independent evidence. News is
+  not: one story is syndicated dozens of times. Deduplicating by story (or capping per-node weight) is the
+  standard fix, and must be evaluated as a new run.
+- **Point-in-time replay:** each day only sees events published up to that day; the engine is tested on
+  synthetic timelines where the right answers are known.

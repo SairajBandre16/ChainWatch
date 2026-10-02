@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 from chainwatch.config import EVAL_DIR
 from chainwatch.extraction.schemas import DisruptionEvent
-from chainwatch.graph.build import TradeGraph
+from chainwatch.graph.build import LaneExposure, TradeGraph
 from chainwatch.graph.linking import link_event, to_graph_event
 from chainwatch.graph.reference import ReferenceData, default_reference
 
@@ -94,6 +94,23 @@ def _day_end(d: date) -> datetime:
     return datetime(d.year, d.month, d.day, 23, 59, 59, tzinfo=UTC)
 
 
+# Per-event caches. An event's link and its exposure to each lane do not depend on the replay day,
+# so they are computed once per event instead of once per day (same numbers, much faster).
+_EXPOSURE_CACHE: dict[tuple, dict[str, LaneExposure]] = {}
+
+
+def _exposures(ev: DisruptionEvent, graph: TradeGraph) -> dict[str, LaneExposure]:
+    # Key on everything that affects linking and weights, not just the id (ids can repeat across
+    # differently-built event sets, e.g. in tests).
+    key = (id(graph.ref), ev.event_id, ev.location, ev.country_code, ev.port_code, ev.severity,
+           ev.confidence)  # fmt: skip
+    if key not in _EXPOSURE_CACHE:
+        gev = to_graph_event(ev, link_event(ev, graph.ref))
+        hits = graph.exposed_lanes(gev) if gev is not None else []
+        _EXPOSURE_CACHE[key] = {h.lane_id: h for h in hits}
+    return _EXPOSURE_CACHE[key]
+
+
 def replay(
     events: list[DisruptionEvent],
     lane_id: str,
@@ -102,20 +119,32 @@ def replay(
     target_nodes: set[str] | None = None,
     ref: ReferenceData | None = None,
 ) -> list[DailySignal]:
-    """One `DailySignal` per day for one lane. Events are linked once, then filtered per day."""
-    ref = ref or default_reference()
-    linked = []
+    """One `DailySignal` per day for one lane.
+
+    The score is the same as `TradeGraph.lane_exposure_score` over the events visible that day:
+    1 - prod(1 - w_i), rounded to 3 decimals (checked by a test).
+    """
+    graph = TradeGraph(ref or default_reference())
+    first, last = (
+        _day_end(min(days)) - timedelta(days=params.lookback_days + 1),
+        _day_end(max(days)),
+    )
+    relevant = []
     for ev in events:
-        gev = to_graph_event(ev, link_event(ev, ref))
-        if gev is not None:
-            linked.append((ev.published, gev))
+        if first < ev.published <= last:
+            hit = _exposures(ev, graph).get(lane_id)
+            if hit is not None:
+                relevant.append((ev.published, hit))
     signals = []
     for d in days:
         end = _day_end(d)
         start = end - timedelta(days=params.lookback_days)
-        visible = [g for published, g in linked if start < published <= end]
-        graph = TradeGraph(ref)
-        score, hits = graph.lane_exposure_score(lane_id, visible)
+        hits = sorted((h for published, h in relevant if start < published <= end),
+                      key=lambda h: h.weight, reverse=True)  # fmt: skip
+        survive = 1.0
+        for h in hits:
+            survive *= 1 - h.weight
+        score = round(1 - survive, 3)
         nodes = sorted({h.via for h in hits})
         flagged = score >= params.threshold
         on_target = flagged and bool(target_nodes and set(nodes) & target_nodes)

@@ -123,3 +123,37 @@ lane AEJEA-INNSA was added. Remaining known gap: free-text summaries can still c
 (qwen wrote "exposure scores ranging from 0.6 to 1.0"); only structured fields are verified.
 
 Example briefs: `docs/examples/brief_{qwen2.5-3b,llama3.2-3b,deterministic}_all.{md,json}`.
+
+## R6. Backtest v1 (frozen spec), keyword-baseline extractor
+- Date: 2026-10-02
+- Command: `uv run python -m chainwatch.backtest.run --offline` (all GDELT days were downloaded first)
+- Spec: `docs/backtest-spec.md` (commit 436013a, written before the engine). τ = 0.5, lookback 7 days.
+- Data: 164 GDELT 1.0 daily event files, 0 missing; 41,937 logistics-filtered items; keyword baseline
+  flagged 6,076 events. Results file: `docs/metrics/backtest_keyword-baseline.json`.
+
+| Disruption | Onset | First warning (INNSA-NLRTM) | Lead time | Lanes warned | Pre-onset off-target flag days |
+|---|---|---|---|---|---|
+| suez_2021 | 2021-03-23 | 2021-03-23 | 0 days (same-day detection) | 17/17 | 7 |
+| red_sea_2023 | 2023-12-15 | 2023-11-15 | ≥ 30 days (censored: flagged on the first window day) | 17/17 | 0 |
+
+- red_sea_2023 vs the secondary reference (first attack on merchant shipping, 2023-11-19): warned 4 days
+  earlier. The lane was already above τ on 2023-11-15 because of Red Sea conflict coverage, so the true
+  first-warning date is earlier than the window can show.
+- **Control windows (false alarms):** INNSA-NLRTM flagged on 45 of 60 quiet days (**false-alarm rate
+  0.75**, 4 episodes). Across all 17 India-Europe/Ireland lanes the rate is 0.75 to 0.82.
+
+Reading: with the keyword extractor the system never misses (both disruptions flagged on or before onset),
+but it is close to "always on", so the warnings carry little information. A 75% false-alarm rate is
+not usable.
+
+Why (from inspecting the flagged control days, which is diagnosis, not tuning):
+1. **Country-level matches:** 45 of the 45 flagged control days include a `CTRY:IN` contribution:
+   any Indian story whose slug has an attack/strike/sanction keyword and "India" counts against every
+   India lane at half weight.
+2. **Duplicate coverage counted as independent evidence:** one story ("Iran briefly seizes two US sea
+   drones in the Red Sea", 2022-09-02) appears as dozens of URLs; `1 - prod(1 - w)` treats each copy
+   as a separate event and saturates the score.
+3. Keyword rules cannot tell a navy drone incident from an attack on merchant ships.
+
+Any fix for these is informed by backtest data, so per the spec it would be reported as a separate,
+clearly labeled post-hoc run, never replacing this one.
