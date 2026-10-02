@@ -23,3 +23,13 @@ Each entry: choice, alternatives, reason.
 - Reason: the DOC API returned HTTP 429 to every request from this machine (IP-level throttle) and only covers
   ~3 months; daily event files go back to 2013, are free, cache well, and are what the backtest needs.
   Event files carry no headline, so the title is the publisher's own URL slug (nothing invented).
+
+## D5. Keyword baseline doubles as the fake LLM
+- Choice: the fake LLM used by the extraction CLI answers with a rule-based keyword extractor.
+- Alternatives: a fake that returns fixed canned JSON; no baseline.
+- Reason: the offline pipeline produces realistic output, and the eval gets a non-LLM baseline for free.
+
+## D6. Ruff ignores E501
+- Choice: `ruff format` enforces line length for code; `E501` is ignored for comments and docstrings.
+- Alternatives: hand-wrap every docstring at 100 chars.
+- Reason: standard practice with an auto-formatter; avoids churn without hurting readability.

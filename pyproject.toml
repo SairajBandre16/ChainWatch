@@ -36,3 +36,5 @@ extend-exclude = ["notebooks"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
+# The formatter owns code line length; long comments and docstrings are allowed.
+ignore = ["E501"]

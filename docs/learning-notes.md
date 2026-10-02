@@ -29,3 +29,19 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
 - **Recall-first pre-filter:** the GDELT event filter keeps any URL slug with a logistics word. It lets some
   noise through on purpose; the LLM step decides what is a real disruption. Whole-word matching stops
   "report" from matching "port".
+
+### Event schema and extraction (`src/chainwatch/extraction/`)
+- **Two-layer schema:** the LLM fills a small `ExtractedEvent` (type, place, codes, severity, dates,
+  confidence). The pipeline then adds provenance (source URL, model, prompt version) to make a
+  `DisruptionEvent`. Small models do better when asked for fewer fields, and provenance must never come
+  from the model anyway.
+- **Enums + aliases:** event types are a fixed list, so results are countable. Near-misses ("strike",
+  "weather") are mapped to the enum instead of being rejected, which saves retries.
+- **Validators as guard rails:** country codes must be 2 letters, port codes 5 characters, severity 1-5.
+  A model reply that breaks a rule triggers the retry loop with the exact error message.
+- **Versioned prompts:** prompts live in `extraction/prompts/extract_v1.md`. Every event records the
+  prompt version, so a later `extract_v2` can be compared fairly on the same labeled items.
+- **Failures are data:** an item that still fails after retries becomes a `status="failed"` record.
+  The failure rate is a metric, and one bad article never kills a batch.
+- **Keyword baseline:** a rules-only extractor. It doubles as the fake LLM (offline runs) and as the
+  floor the real models must beat in the evaluation.
