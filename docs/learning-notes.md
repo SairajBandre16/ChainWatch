@@ -17,3 +17,15 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   Same inputs give the same answer instantly, saving free-tier quota and making experiments reproducible.
   Trade-off: if you change something that affects output but is not in the key, you get stale answers,
   so anything that matters must go in the key.
+
+### News ingestion (`src/chainwatch/ingest/`)
+- **Normalize early:** RSS, GDELT DOC and GDELT event files all become one `NewsItem` model. Downstream code
+  never cares where an item came from. The id is a hash of the URL, so duplicates across feeds collapse.
+- **Cache every HTTP call:** `CachedHttp` stores raw responses in `data/raw/http/`. With `--offline` the
+  pipeline replays from disk only, which is how tests and demos run without network.
+- **Rate limits and backoff:** GDELT allows one request per 5 seconds. On HTTP 429 or 5xx we wait, double the
+  wait, and retry (exponential backoff). Trade-off: a slow source can make a run slow, so failures are logged
+  and skipped rather than fatal.
+- **Recall-first pre-filter:** the GDELT event filter keeps any URL slug with a logistics word. It lets some
+  noise through on purpose; the LLM step decides what is a real disruption. Whole-word matching stops
+  "report" from matching "port".
