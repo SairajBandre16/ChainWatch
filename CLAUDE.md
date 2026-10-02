@@ -177,12 +177,19 @@ Each step lists **Do** and **Done when**. A step is not finished until its "Done
 
 ```bash
 uv sync                                                   # install deps
-ollama pull qwen2.5:7b                                    # optional local model
-pytest -q                                                 # tests
-ruff check . && ruff format .                             # lint + format
-uvicorn chainwatch.api.main:app --reload                  # API
-streamlit run app/main.py                                 # dashboard
-python -m chainwatch.backtest.run --event red_sea_2024    # backtest
+ollama pull qwen2.5:3b                                    # optional local model (default; see D2)
+uv run pytest -q                                          # tests
+uv run ruff check . && uv run ruff format .               # lint + format
+uv run uvicorn chainwatch.api.main:app --reload           # API
+uv run streamlit run app/main.py                          # dashboard
+uv run python -m chainwatch.ingest.run --write-sample     # fetch news (RSS + GDELT)
+uv run python -m chainwatch.extraction.run --provider ollama --model qwen2.5:3b   # extraction
+uv run python -m chainwatch.extraction.eval template|import-csv|score --pred <file>  # eval
+uv run python -m chainwatch.graph.linking                 # link-rate report
+uv run python -m chainwatch.forecast.train                # forecast models + metrics
+uv run python -m chainwatch.forecast.explain              # SHAP plots
+uv run python -m chainwatch.agent.run [--provider ollama --model qwen2.5:3b] --save  # brief
+uv run python -m chainwatch.backtest.run --event red_sea_2023   # backtest (ids: suez_2021, red_sea_2023)
 ```
 
 (Keep this section accurate as commands are added.)
