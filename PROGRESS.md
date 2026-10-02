@@ -1,7 +1,7 @@
 # Progress
 Last updated: 2026-10-02
 
-## Current step: 3.3 Explainability
+## Current step: 4.1 Tools
 
 ## Done
 - [x] 0 Bootstrap: repo layout, pyproject (uv, Python 3.12), config, docs stubs, smoke test; pytest + ruff pass
@@ -21,7 +21,7 @@ Last updated: 2026-10-02
 ### Phase 3: Risk forecasting (branch `phase/3-forecast`)
 - [x] 3.1 Data prep: DataCo downloaded from Mendeley (CC BY 4.0, checksum verified, no Kaggle login); point-in-time history features; purged time split; leakage tests pass (7e509be)
 - [x] 3.2 Baselines + model: test ROC AUC majority 0.500, shipping-mode rule 0.724, logreg 0.752, LightGBM 0.776 (results R3) (a299904)
-- [ ] 3.3 Explainability
+- [x] 3.3 Explainability: exact TreeSHAP via LightGBM pred_contrib; plots in docs/figures/; `explain()` gives top-3 drivers in plain text (results R4) (93c9f11)
 
 ### Phase 4: Agent and backtest (branch `phase/4-agent-backtest`)
 - [ ] 4.1 Tools
@@ -39,6 +39,30 @@ Last updated: 2026-10-02
 - [ ] 6.3 Resume material
 - [ ] 6.4 Owner checklist
 
+## Phase summaries
+
+### Phase 1: extraction (merged)
+- Built: one LLM interface (Ollama, Groq, Gemini, fake) with disk cache and JSON self-repair retries;
+  RSS + GDELT ingestion with offline cache; DisruptionEvent schema, versioned prompt, failure-tolerant
+  pipeline; keyword baseline; per-field P/R/F1 scorer and a CSV labeling workflow.
+- Measured: failure rate and runtime for qwen2.5:3b (1.5%, 226 s / 66 items) and llama3.2:3b
+  (10.6%, 465 s) on the sample (results R1). Accuracy pending owner labels.
+- Review: `extraction/prompts/extract_v1.md`, `extraction/schemas.py`, `docs/labeling-guide.md`.
+
+### Phase 2: graph (merged)
+- Built: curated ports/chokepoints/legs/lanes, TradeGraph with routes, exposure, alternates and
+  explainable exposure score; event-to-node linking.
+- Measured: Red Sea event exposes 22 of 23 lanes, Cape detour +4,540 nm / +13.5 days on Nhava Sheva to
+  Rotterdam (tests); link rate 0.857-0.875 on sample events (R2). Found and fixed a hallucinated
+  port-code link (R2b).
+- Review: `data/processed/*.csv` (domain knowledge), `graph/build.py` scoring weights.
+
+### Phase 3: forecast (merged)
+- Built: DataCo loader (Mendeley, checksum), point-in-time history features, purged time split with
+  leakage tests, 4 models, SHAP plots and `explain()`.
+- Measured: test ROC AUC 0.776 (LightGBM) vs 0.752 logreg, 0.724 one-rule, 0.500 majority (R3).
+- Review: payment type as a top feature (likely dataset artifact, R4); DataCo is retail, not maritime.
+
 ## Blockers (owner action needed)
 - **Extraction labels (step 1.4).** Hand-label 100+ news items so extraction P/R/F1 can be reported.
   Open `data/eval/labeling_template.csv`, follow `docs/labeling-guide.md`, then run
@@ -50,4 +74,4 @@ Last updated: 2026-10-02
 - Local model: `qwen2.5:3b` (already installed) is the default instead of `qwen2.5:7b` from the spec. See `docs/decisions.md`.
 
 ## Resume instructions
-On branch `phase/3-forecast`, do step 3.3 (SHAP summary plot to docs/figures/, `explain()` returning top drivers in plain text). Then merge phase 3 to main. DataCo is in data/raw/dataco/ (re-download with `download_dataco()`); model saved in models/forecast.joblib by `python -m chainwatch.forecast.train`.
+Create branch `phase/4-agent-backtest` from main and start step 4.1 (agent tools: graph queries, forecaster, event store, Open-Meteo weather). Model file: `uv run python -m chainwatch.forecast.train` recreates models/forecast.joblib (DataCo in data/raw/dataco/, or `download_dataco()`).
