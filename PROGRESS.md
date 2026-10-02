@@ -1,7 +1,7 @@
 # Progress
 Last updated: 2026-10-02
 
-## Current step: 2.3 Event-to-graph linking
+## Current step: 3.1 Data prep
 
 ## Done
 - [x] 0 Bootstrap: repo layout, pyproject (uv, Python 3.12), config, docs stubs, smoke test; pytest + ruff pass
@@ -16,7 +16,7 @@ Last updated: 2026-10-02
 ### Phase 2: Knowledge graph (branch `phase/2-graph`)
 - [x] 2.1 Reference data: 58 ports, 35 waypoints (10 chokepoints), 99 sea legs, 23 lanes; validated by tests (828a359)
 - [x] 2.2 Graph build + queries: TradeGraph with exposed_lanes, alternate_routes, lane_exposure_score; Red Sea event flags India-Europe lanes, Cape suggested (ab31e2e)
-- [ ] 2.3 Event-to-graph linking
+- [x] 2.3 Event-to-graph linking: LOCODE -> alias -> whole-word alias -> difflib fuzzy -> country fallback; link rate on sample events 0.857 (qwen, baseline), see results R2 (9b824f2)
 
 ### Phase 3: Risk forecasting (branch `phase/3-forecast`)
 - [ ] 3.1 Data prep
@@ -45,8 +45,9 @@ Last updated: 2026-10-02
   `uv run python -m chainwatch.extraction.eval import-csv`. Until then extraction metrics are "pending labels".
 
 ## Decisions pending review
+- Graph is a schematic sea network (D7); distances are great-circle approximations.
 - GDELT DOC API returns HTTP 429 from this machine; live news uses RSS, history uses GDELT daily event files (D4).
 - Local model: `qwen2.5:3b` (already installed) is the default instead of `qwen2.5:7b` from the spec. See `docs/decisions.md`.
 
 ## Resume instructions
-On branch `phase/2-graph`, start step 2.3 (event-to-graph linking: alias table + fuzzy matching, report link rate on sample events). Then merge phase 2 to main.
+Create branch `phase/3-forecast` from main and start step 3.1 (data prep). Check `data/raw/` for the DataCo CSV first.
