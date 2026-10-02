@@ -1,0 +1,36 @@
+node_id,name,kind,lat,lon,country_code,aliases
+ARABIAN_SEA,Arabian Sea,sea_region,16.0,64.0,,Arabian Sea
+SRI_LANKA_SOUTH,South of Sri Lanka,sea_region,5.5,80.6,,Dondra Head|Laccadive Sea
+BAY_OF_BENGAL,Bay of Bengal,sea_region,15.0,87.0,,Bay of Bengal
+GULF_OF_OMAN,Gulf of Oman,sea_region,24.5,58.5,,Gulf of Oman|Fujairah
+HORMUZ,Strait of Hormuz,chokepoint,26.57,56.25,,Strait of Hormuz|Hormuz
+PERSIAN_GULF,Persian Gulf,sea_region,26.5,52.5,,Persian Gulf|Arabian Gulf
+GULF_OF_ADEN,Gulf of Aden,sea_region,12.5,47.5,,Gulf of Aden|Aden
+BAB_EL_MANDEB,Bab-el-Mandeb Strait,chokepoint,12.6,43.35,,Bab-el-Mandeb|Bab el-Mandeb|Mandeb Strait
+RED_SEA,Red Sea,sea_region,20.0,38.5,,Red Sea
+SUEZ_CANAL,Suez Canal,chokepoint,30.6,32.33,EG,Suez Canal|Suez
+EAST_MED,Eastern Mediterranean,sea_region,33.5,27.0,,Eastern Mediterranean|East Med
+CENTRAL_MED,Central Mediterranean,sea_region,36.5,14.0,,Mediterranean|Mediterranean Sea|Central Mediterranean
+WEST_MED,Western Mediterranean,sea_region,37.5,2.0,,Western Mediterranean
+GIBRALTAR,Strait of Gibraltar,chokepoint,35.97,-5.6,,Strait of Gibraltar|Gibraltar
+IBERIAN_ATLANTIC,Atlantic off Iberia,sea_region,40.0,-11.0,,off Portugal|Iberian coast
+BAY_OF_BISCAY,Bay of Biscay,sea_region,46.0,-6.0,,Bay of Biscay|Biscay
+CELTIC_SEA,Celtic Sea,sea_region,50.5,-8.0,,Celtic Sea
+IRISH_SEA,Irish Sea,sea_region,53.5,-5.0,,Irish Sea|St George's Channel
+ENGLISH_CHANNEL,English Channel,chokepoint,50.3,-1.0,,English Channel|Dover Strait|Strait of Dover
+NORTH_SEA,North Sea,sea_region,54.0,4.0,,North Sea
+BALTIC_SEA,Baltic Sea,sea_region,55.5,15.0,,Baltic Sea|Baltic|Danish straits
+SW_INDIAN_OCEAN,South-west Indian Ocean,sea_region,-15.0,55.0,,Indian Ocean|Mozambique Channel|Madagascar
+CAPE_OF_GOOD_HOPE,Cape of Good Hope,chokepoint,-34.8,18.5,ZA,Cape of Good Hope|the Cape|Cape route
+WEST_AFRICA_ATLANTIC,Atlantic off West Africa,sea_region,0.0,-8.0,,Gulf of Guinea|West Africa
+CANARY,Canary Islands,sea_region,28.0,-16.0,ES,Canary Islands|Canaries
+MALACCA,Strait of Malacca,chokepoint,2.5,101.2,,Strait of Malacca|Malacca Strait|Malacca
+SINGAPORE_STRAIT,Singapore Strait,chokepoint,1.2,103.9,,Singapore Strait
+SOUTH_CHINA_SEA,South China Sea,sea_region,14.0,114.0,,South China Sea
+TAIWAN_STRAIT,Taiwan Strait,chokepoint,24.0,119.5,,Taiwan Strait
+EAST_CHINA_SEA,East China Sea,sea_region,30.0,125.0,,East China Sea|Yellow Sea
+NORTH_ATLANTIC,North Atlantic,sea_region,40.0,-40.0,,North Atlantic|Atlantic
+US_EAST_COAST,US East Coast,sea_region,35.0,-73.0,US,US East Coast
+CARIBBEAN,Caribbean Sea,sea_region,15.0,-75.0,,Caribbean
+PANAMA_CANAL,Panama Canal,chokepoint,9.08,-79.68,PA,Panama Canal|Gatun Lake
+EAST_PACIFIC,Eastern Pacific,sea_region,15.0,-100.0,,Eastern Pacific
