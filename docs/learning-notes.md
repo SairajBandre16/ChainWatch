@@ -72,3 +72,37 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   Linking tries, in order: the UN/LOCODE, an exact alias, an alias inside the text (longest wins),
   fuzzy string similarity (difflib ratio >= 0.85, catches typos), then the country node.
 - Each link records which rule fired, so the link rate can be broken down and weak rules spotted.
+
+## Phase 3: Risk forecasting
+
+### Data leakage and time-aware splits
+- **Leakage** = training on information that would not exist at prediction time. It gives great test
+  scores and a useless model. DataCo has obvious leaks: real shipping days and delivery status *are* the
+  answer, and the shipping date reveals it too. These are dropped from features.
+- **Subtle leak: label timing.** An order placed on Dec 30 that ships on Jan 3 has a label you only learn on
+  Jan 3. A naive date split puts it in training even though, on Jan 1, you could not know it. We record
+  `label_known_at` and **purge** such rows from the earlier split.
+- **Point-in-time history features:** "late rate for First Class to Western Europe so far" is computed with a
+  cumulative sum over labels sorted by when they became known, then `merge_asof` attaches, to each order,
+  the last value known strictly before it was placed. Tests recompute this by brute force and also flip
+  future labels to prove past features do not move.
+- **Smoothing:** a group with 3 orders and 3 late ones should not get rate 1.0. We use
+  `(late + 20 x prior) / (n + 20)`, which shrinks small groups toward the overall rate (a Bayesian average).
+
+### Baselines and model choice
+- Always show a **baseline** next to a model. "AUC 0.78" means nothing alone; "0.78 vs 0.72 for a
+  one-line rule" tells you what the model actually adds.
+- **ROC AUC**: probability a random late order is scored above a random on-time one (0.5 = coin flip).
+  **PR-AUC**: precision/recall trade-off for the positive class; its floor is the positive rate (0.55).
+  **Brier score**: mean squared error of probabilities; rewards calibrated probabilities, lower is better.
+- **Early stopping**: LightGBM adds trees until validation loss stops improving for 100 rounds. Validation
+  picks the number of trees; the test split is used once, at the end.
+
+### SHAP explanations
+- SHAP splits one prediction into per-feature contributions that **add up exactly** to the model output
+  (in log-odds for a classifier): `logit(p) = base + sum(contributions)`. A test checks this identity.
+- **Global view:** mean |SHAP| per feature ranks what the model relies on overall.
+- **Local view:** `explain(order)` lists the top 3 contributions in plain words, e.g. "shipping mode = First
+  Class raises risk (+2.81 log-odds)".
+- SHAP explains the **model**, not the world. A big SHAP value for payment type means the model uses it,
+  which led us to check the raw data and flag a likely dataset artifact.

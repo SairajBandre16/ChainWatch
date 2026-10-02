@@ -43,3 +43,14 @@ Each entry: choice, alternatives, reason.
 - Choice: `difflib.SequenceMatcher` with a 0.85 threshold, after exact and whole-word alias rules.
 - Alternatives: rapidfuzz (faster), embeddings.
 - Reason: no extra dependency; alias lists are small (~300 strings), so speed does not matter.
+
+## D9. DataCo from Mendeley Data instead of Kaggle
+- Choice: download the original DataCo publication from Mendeley Data (CC BY 4.0, no login), verify SHA-256.
+- Alternatives: Kaggle mirror (needs login, was listed as an owner task), synthetic data.
+- Reason: same file, open licence, scriptable (`download_dataco()`), so no owner action is needed.
+
+## D10. Point-in-time history features and purged splits
+- Choice: an order's label is "known" at its shipping date; history features use only labels known
+  strictly before the order date; training rows whose label is still unknown at the split cutoff are dropped.
+- Alternatives: plain random split (leaks future), plain date split without purging (small leak at the boundary).
+- Reason: mirrors what a live system could actually know at prediction time.
