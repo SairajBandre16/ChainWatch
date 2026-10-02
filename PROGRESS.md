@@ -1,7 +1,7 @@
 # Progress
 Last updated: 2026-10-02
 
-## Current step: 4.3 Backtest engine
+## Current step: 5.1 API
 
 ## Done
 - [x] 0 Bootstrap: repo layout, pyproject (uv, Python 3.12), config, docs stubs, smoke test; pytest + ruff pass
@@ -26,7 +26,7 @@ Last updated: 2026-10-02
 ### Phase 4: Agent and backtest (branch `phase/4-agent-backtest`)
 - [x] 4.1 Tools: 8 typed tools (search/get event, exposed lanes, lane risk, alternate routes, ML delay risk, Open-Meteo weather, list lanes) with as_of time filter; all unit-tested (288ac13)
 - [x] 4.2 Agent + brief: plain-Python JSON tool loop, Brief schema, guard rails (citations, scores, coverage, reroute feasibility), deterministic fallback, rubric; real qwen/llama examples in docs/examples (results R5) (42199a2)
-- [ ] 4.3 Backtest engine
+- [x] 4.3 Backtest engine: spec committed first (436013a); replay engine tested on synthetic timelines; frozen keyword run on 164 GDELT days: Suez lead 0 d, Red Sea lead >=30 d (censored), false-alarm rate 0.75 (results R6) (612374a). LLM backtest run (qwen2.5:3b, prefiltered) in progress; see Resume.
 
 ### Phase 5: Dashboard and deployment (branch `phase/5-app`)
 - [ ] 5.1 API
@@ -69,9 +69,11 @@ Last updated: 2026-10-02
   `uv run python -m chainwatch.extraction.eval import-csv`. Until then extraction metrics are "pending labels".
 
 ## Decisions pending review
+- Backtest false-alarm rate 0.75 with the keyword extractor; a post-hoc dedupe/country-weight fix would be a separate labeled run (R6).
 - Graph is a schematic sea network (D7); distances are great-circle approximations.
 - GDELT DOC API returns HTTP 429 from this machine; live news uses RSS, history uses GDELT daily event files (D4).
 - Local model: `qwen2.5:3b` (already installed) is the default instead of `qwen2.5:7b` from the spec. See `docs/decisions.md`.
 
 ## Resume instructions
-On branch `phase/4-agent-backtest`, start step 4.3: FIRST write docs/backtest-spec.md (flag + onset definitions), commit it, THEN build the replay engine over GDELT daily event files (Suez Mar 2021, Red Sea late 2023), test on a synthetic timeline, record lead time + false-alarm rate in results. Model file: `uv run python -m chainwatch.forecast.train` recreates models/forecast.joblib (DataCo in data/raw/dataco/, or `download_dataco()`).
+Phase 5 on branch `phase/5-app`. API (src/chainwatch/api/main.py + tests/test_api.py) and dashboard (app/main.py + tests/test_dashboard.py) are written and pass; note the API files were committed early in 612374a. Next: verify uvicorn + streamlit start, docker build (start Docker Desktop first), then phase 6 docs.
+LLM backtest: `uv run python -m chainwatch.backtest.run --extractor ollama:qwen2.5:3b --prefilter --offline` (resumes from cache in data/raw/backtest/qwen2.5-3b__prefilter/; ~8,773 items). When done, log as R7 (deviation from spec: location prefilter). Model file: `uv run python -m chainwatch.forecast.train` recreates models/forecast.joblib (DataCo in data/raw/dataco/, or `download_dataco()`).
