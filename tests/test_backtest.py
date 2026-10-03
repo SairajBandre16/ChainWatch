@@ -129,3 +129,38 @@ def test_replay_score_matches_graph_exposure_score() -> None:
     score, hits = graph.lane_exposure_score("INNSA-NLRTM", gevs)
     assert signal.score == score
     assert signal.contributing_events == [h.event_id for h in hits]
+
+
+def test_v2_drops_country_level_hits() -> None:
+    # A country-only location links to CTRY:IN; v1 counts it at half weight, v2 ignores it.
+    events = [ev(f"c{i}", "India", ONSET - timedelta(days=3)) for i in range(2)]
+    for e in events:
+        e.country_code = "IN"
+    v1 = replay(events, "INNSA-NLRTM", window_days(), PARAMS, {"SUEZ_CANAL"})
+    v2 = replay(events, "INNSA-NLRTM", window_days(), PARAMS, {"SUEZ_CANAL"}, scoring="v2")
+    assert any(s.flagged for s in v1) and all(
+        "CTRY:IN" in s.contributing_nodes for s in v1 if s.flagged
+    )
+    assert not any(s.flagged for s in v2) and all(s.score == 0 for s in v2)
+
+
+def test_v2_counts_duplicate_coverage_once() -> None:
+    # Five weak copies of one story (same day, type, node) saturate v1 but count once in v2.
+    day = ONSET - timedelta(days=2)
+    events = [ev(f"d{i}", "Suez Canal", day, severity=2, conf=0.5) for i in range(5)]
+    v1 = {s.day: s for s in replay(events, "INNSA-NLRTM", window_days(), PARAMS, {"SUEZ_CANAL"})}
+    v2 = {s.day: s for s in replay(events, "INNSA-NLRTM", window_days(), PARAMS, {"SUEZ_CANAL"},
+                                   scoring="v2")}  # fmt: skip
+    assert v1[day].flagged and v1[day].score == round(1 - 0.8**5, 3)
+    assert not v2[day].flagged and v2[day].score == 0.2
+    assert v2[day].contributing_events == ["d0"]
+
+
+def test_v2_keeps_distinct_stories() -> None:
+    # The same weak story on four different days is four pieces of evidence in v2 too.
+    events = [
+        ev(f"s{i}", "Suez Canal", ONSET - timedelta(days=i), severity=2, conf=0.5) for i in range(4)
+    ]
+    v2 = {s.day: s for s in replay(events, "INNSA-NLRTM", window_days(), PARAMS, {"SUEZ_CANAL"},
+                                   scoring="v2")}  # fmt: skip
+    assert v2[ONSET].score == round(1 - 0.8**4, 3) and v2[ONSET].on_target

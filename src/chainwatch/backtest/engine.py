@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -111,6 +112,22 @@ def _exposures(ev: DisruptionEvent, graph: TradeGraph) -> dict[str, LaneExposure
     return _EXPOSURE_CACHE[key]
 
 
+Scoring = Literal["v1", "v2"]
+
+
+def _v2_hits(hits: list[tuple[datetime, str, LaneExposure]]) -> list[tuple[datetime, LaneExposure]]:
+    """v2 scoring (docs/backtest-spec-v2.md): drop country-level hits, then keep one hit per story,
+    where a story is (publication date, event type, graph node), using its highest weight."""
+    best: dict[tuple, tuple[datetime, LaneExposure]] = {}
+    for published, event_type, h in hits:
+        if h.via.startswith("CTRY:"):
+            continue
+        key = (published.date(), event_type, h.via)
+        if key not in best or h.weight > best[key][1].weight:
+            best[key] = (published, h)
+    return list(best.values())
+
+
 def replay(
     events: list[DisruptionEvent],
     lane_id: str,
@@ -118,23 +135,29 @@ def replay(
     params: Params,
     target_nodes: set[str] | None = None,
     ref: ReferenceData | None = None,
+    scoring: Scoring = "v1",
 ) -> list[DailySignal]:
     """One `DailySignal` per day for one lane.
 
-    The score is the same as `TradeGraph.lane_exposure_score` over the events visible that day:
-    1 - prod(1 - w_i), rounded to 3 decimals (checked by a test).
+    v1 (frozen spec): the score is the same as `TradeGraph.lane_exposure_score` over the events
+    visible that day, 1 - prod(1 - w_i), rounded to 3 decimals (checked by a test).
+    v2 (post-hoc, see docs/backtest-spec-v2.md): same formula after `_v2_hits` filtering.
     """
     graph = TradeGraph(ref or default_reference())
     first, last = (
         _day_end(min(days)) - timedelta(days=params.lookback_days + 1),
         _day_end(max(days)),
     )
-    relevant = []
+    tagged = []
     for ev in events:
         if first < ev.published <= last:
             hit = _exposures(ev, graph).get(lane_id)
             if hit is not None:
-                relevant.append((ev.published, hit))
+                tagged.append((ev.published, ev.event_type, hit))
+    if scoring == "v2":
+        relevant = _v2_hits(tagged)
+    else:
+        relevant = [(published, h) for published, _, h in tagged]
     signals = []
     for d in days:
         end = _day_end(d)
@@ -209,7 +232,8 @@ def score_controls(lane_id: str, windows: list[list[DailySignal]]) -> ControlRes
 
 
 def control_signals(
-    events: list[DisruptionEvent], spec: BacktestSpec, lane_id: str
+    events: list[DisruptionEvent], spec: BacktestSpec, lane_id: str, scoring: Scoring = "v1"
 ) -> list[list[DailySignal]]:
     """Signals for each control window, kept separate."""
-    return [replay(events, lane_id, w.days(), spec.params) for w in spec.control_windows]
+    return [replay(events, lane_id, w.days(), spec.params, scoring=scoring)
+            for w in spec.control_windows]  # fmt: skip

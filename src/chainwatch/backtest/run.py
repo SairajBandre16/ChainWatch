@@ -3,6 +3,7 @@
     python -m chainwatch.backtest.run                                  # keyword baseline, all events
     python -m chainwatch.backtest.run --event red_sea_2023
     python -m chainwatch.backtest.run --extractor ollama:qwen2.5:3b    # LLM run (slow; see --prefilter)
+    python -m chainwatch.backtest.run --scoring v2                     # post-hoc scoring (spec v2)
 
 Steps: GDELT daily files (cached) -> logistics NewsItems -> extraction (cached per extractor and day)
 -> daily replay per lane -> lead time / false-alarm metrics -> docs/metrics/backtest_<extractor>.json
@@ -18,6 +19,7 @@ from datetime import UTC, date, datetime
 
 from chainwatch.backtest.engine import (
     BacktestSpec,
+    Scoring,
     control_signals,
     load_spec,
     replay,
@@ -83,7 +85,7 @@ def events_for_day(
 
 
 def run_backtest(spec: BacktestSpec, extractor: str, only: str | None, prefilter: bool,
-                 offline: bool = False) -> dict:  # fmt: skip
+                 offline: bool = False, scoring: Scoring = "v1") -> dict:  # fmt: skip
     llm = make_extractor(extractor)
     http = CachedHttp(offline=offline)
     all_events: list[DisruptionEvent] = []
@@ -98,15 +100,16 @@ def run_backtest(spec: BacktestSpec, extractor: str, only: str | None, prefilter
         if lane.focus in spec.secondary_lane_focus and lane.lane_id != spec.primary_lane
     )  # fmt: skip
 
-    results: dict = {"extractor": llm.model, "prefilter": prefilter, "disruptions": {},
-                     "controls": {}}  # fmt: skip
+    results: dict = {"extractor": llm.model, "prefilter": prefilter, "scoring": scoring,
+                     "disruptions": {}, "controls": {}}  # fmt: skip
     for d in spec.disruptions:
         if only and d.id != only:
             continue
         window = spec.window_for(d).days()
         per_lane = []
         for lane in lanes:
-            signals = replay(all_events, lane, window, spec.params, set(d.target_nodes), ref)
+            signals = replay(all_events, lane, window, spec.params, set(d.target_nodes), ref,
+                             scoring)  # fmt: skip
             per_lane.append(score_disruption(d, lane, signals).model_dump(mode="json"))
             if lane == spec.primary_lane:
                 results["disruptions"].setdefault(d.id, {})["primary_signals"] = [
@@ -121,7 +124,7 @@ def run_backtest(spec: BacktestSpec, extractor: str, only: str | None, prefilter
             "median_lead_time_days": statistics.median(leads) if leads else None,
         }
     for lane in lanes[:1] if only else lanes:
-        res = score_controls(lane, control_signals(all_events, spec, lane))
+        res = score_controls(lane, control_signals(all_events, spec, lane, scoring))
         results["controls"][lane] = res.model_dump()
     results["days"] = {
         "total": len(day_log),
@@ -141,11 +144,16 @@ def main() -> None:
     parser.add_argument("--prefilter", action="store_true",
                         help="only extract items whose headline names a graph location")  # fmt: skip
     parser.add_argument("--offline", action="store_true")
+    parser.add_argument("--scoring", choices=["v1", "v2"], default="v1",
+                        help="v1 = frozen spec; v2 = post-hoc rules in docs/backtest-spec-v2.md")  # fmt: skip
     args = parser.parse_args()
 
     spec = load_spec()
-    results = run_backtest(spec, args.extractor, args.event, args.prefilter, args.offline)
+    results = run_backtest(spec, args.extractor, args.event, args.prefilter, args.offline,
+                           args.scoring)  # fmt: skip
     name = results["extractor"].replace(":", "-") + ("__prefilter" if args.prefilter else "")
+    if args.scoring != "v1":
+        name += f"__{args.scoring}"  # v1 keeps its original file name
     METRICS_DIR.mkdir(parents=True, exist_ok=True)
     out = METRICS_DIR / f"backtest_{name}.json"
     out.write_text(json.dumps(results, indent=1, default=str), encoding="utf-8")
