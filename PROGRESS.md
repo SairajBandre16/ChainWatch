@@ -1,5 +1,5 @@
 # Progress
-Last updated: 2026-10-02
+Last updated: 2026-10-03
 
 ## Current step: build plan complete (owner actions remain; see Owner checklist)
 
@@ -96,8 +96,7 @@ Last updated: 2026-10-02
    screenshots listed in the README.
 6. **Record a demo** (map -> brief -> backtest tab), 1-2 minutes.
 7. **Choose a licence** for the repo (none is set) and add it to the README and HF Space metadata.
-8. **Push to GitHub** (not done; no remote configured). Create the repo, `git remote add origin ...`,
-   push `main` and the phase branches if you want them. CI runs on push.
+8. ~~Push to GitHub~~ Done 2026-10-03: https://github.com/SairajBandre16/ChainWatch (public, `main` only; CI green on first push).
 9. **Deploy** to Hugging Face Spaces following `docs/deployment.md`, then add the URL to the README.
 10. **Fill resume bullets** in `docs/resume-bullets.md` once items 1-3 produce numbers.
 
