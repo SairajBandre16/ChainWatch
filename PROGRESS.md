@@ -26,7 +26,7 @@ Last updated: 2026-10-03
 ### Phase 4: Agent and backtest (branch `phase/4-agent-backtest`)
 - [x] 4.1 Tools: 8 typed tools (search/get event, exposed lanes, lane risk, alternate routes, ML delay risk, Open-Meteo weather, list lanes) with as_of time filter; all unit-tested (288ac13)
 - [x] 4.2 Agent + brief: plain-Python JSON tool loop, Brief schema, guard rails (citations, scores, coverage, reroute feasibility), deterministic fallback, rubric; real qwen/llama examples in docs/examples (results R5) (42199a2)
-- [x] 4.3 Backtest engine: spec committed first (436013a); replay engine tested on synthetic timelines; frozen keyword run on 164 GDELT days: Suez lead 0 d, Red Sea lead >=30 d (censored), false-alarm rate 0.75 (results R6) (612374a). LLM backtest run (qwen2.5:3b, prefiltered) stopped after 3/164 days (R7); see Owner checklist.
+- [x] 4.3 Backtest engine: spec committed first (436013a); replay engine tested on synthetic timelines; frozen keyword run on 164 GDELT days: Suez lead 0 d, Red Sea lead >=30 d (censored), false-alarm rate 0.75 (results R6) (612374a). LLM backtest run (qwen2.5:3b, prefiltered) paused after 5/164 days (R7); see Owner checklist.
 
 ### Phase 5: Dashboard and deployment (branch `phase/5-app`)
 - [x] 5.1 API: FastAPI /health /events /lanes /risk /brief /backtest; 6 endpoint tests; served via uvicorn and checked with curl (a217f73)

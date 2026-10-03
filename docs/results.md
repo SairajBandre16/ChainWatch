@@ -210,7 +210,8 @@ Reading:
 - Deviation from spec, stated up front: the spec says the LLM runs "on the same items" as the keyword run.
   On a laptop CPU that is 41,937 items, so this run only extracts items whose headline names a graph
   location (8,773 items). This filter uses no backtest outcomes, but it is a deviation and is labeled.
-- Status: **stopped after 3 of 164 days** (2019-08-25 to 2019-08-27: 95 items, 0 failures, 2 events).
+- Status: **paused after 5 of 164 days** (2019-08-25 to 2019-08-29: 183 items, 0 failures, 7 events).
+  Resumed 2026-10-03 for days 4-5, then stopped by the owner. The same command resumes from day 6.
   At the observed pace (about 8 minutes per day while other work ran) the full run needs roughly 20 hours.
   It resumes from `data/raw/backtest/qwen2.5-3b__prefilter/` (one file per finished day).
 - No lead-time or false-alarm numbers exist for this extractor yet.
