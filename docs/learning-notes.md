@@ -143,3 +143,8 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   standard fix, and must be evaluated as a new run.
 - **Point-in-time replay:** each day only sees events published up to that day; the engine is tested on
   synthetic timelines where the right answers are known.
+- **Post-hoc fixes and pre-registration.** After seeing a bad result it is tempting to tweak until it
+  looks good. The honest way: write the fix down and commit it *before* running (`docs/backtest-spec-v2.md`),
+  run it once, keep the old run, and say the new number is optimistic because the fix was inspired by the
+  same data. Here it halved the false-alarm rate (0.75 -> 0.367) and also revealed that the v1 Suez
+  "same-day" detection had been helped by an unrelated story.

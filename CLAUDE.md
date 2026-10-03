@@ -190,6 +190,7 @@ uv run python -m chainwatch.forecast.train                # forecast models + me
 uv run python -m chainwatch.forecast.explain              # SHAP plots
 uv run python -m chainwatch.agent.run [--provider ollama --model qwen2.5:3b] --save  # brief
 uv run python -m chainwatch.backtest.run --event red_sea_2023   # backtest (ids: suez_2021, red_sea_2023)
+uv run python -m chainwatch.backtest.run --scoring v2           # post-hoc v2 scoring (R6b)
 ```
 
 (Keep this section accurate as commands are added.)

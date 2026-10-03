@@ -52,10 +52,18 @@ With the keyword extractor on 41,937 GDELT items:
   always on. Diagnosis: (a) country-level matches pull in unrelated Indian news; (b) one syndicated story
   (dozens of URLs) is counted as dozens of independent events.
 
+**Post-hoc v2 [R6b].** Two rules, written down and committed before running (`docs/backtest-spec-v2.md`):
+drop country-level matches and count each story (date, event type, node) once. Result: false-alarm rate
+0.75 -> 0.367, Red Sea lead unchanged, Suez now detected one day *after* onset (-1). That last change is
+informative: v1's same-day Suez detection was partly lifted over the threshold by an unrelated Indian
+story. The remaining false alarms are real but minor incidents on the route (a ship briefly aground in
+Suez in September 2022, Houthi threats in 2019). Because the rules were chosen after looking at the
+control windows, 0.367 is optimistic.
+
 The honest headline is therefore: *the plumbing works end to end and catches both disruptions, but with
-keyword extraction the signal is too noisy to be useful.* The obvious next steps are story-level
-deduplication, dropping or down-weighting country-level matches for conflict events, and the LLM
-extractor; each must be reported as a new, labeled run because the diagnosis used backtest data.
+keyword extraction the signal is too noisy to be useful.* Deduplication and dropping country-level
+matches (R6b) halve the noise; the next step is the LLM extractor's severity judgement, so that "briefly
+aground" stops counting like "closed".
 
 ## Lessons
 

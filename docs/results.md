@@ -170,6 +170,40 @@ Why (from inspecting the flagged control days, which is diagnosis, not tuning):
 Any fix for these is informed by backtest data, so per the spec it would be reported as a separate,
 clearly labeled post-hoc run, never replacing this one.
 
+## R6b. Backtest v2 scoring (post-hoc, pre-registered), keyword-baseline extractor
+- Date: 2026-10-03
+- Command: `uv run python -m chainwatch.backtest.run --offline --scoring v2`
+- Rules: `docs/backtest-spec-v2.md`, committed (1bdb376) before this run: drop country-level (`CTRY:XX`)
+  hits from the flag signal; count each story (publication date, event type, node) once at its highest
+  weight. No parameters; run once. Everything else as R6 (same 164 days, 41,937 items, 6,076 events,
+  τ = 0.5, 7-day lookback). Results file: `docs/metrics/backtest_keyword-baseline__v2.json`.
+- Re-running v1 after the code change reproduces R6 exactly (45/60 control days flagged).
+- **Post-hoc caveat:** the rules came from inspecting R6 control-window flags, so the v2 false-alarm rate
+  is optimistic. A fair check needs fresh control windows.
+
+| Metric (INNSA-NLRTM) | v1 (R6) | v2 (R6b) |
+|---|---|---|
+| suez_2021 first warning / lead | 2021-03-23 / 0 days | 2021-03-24 / **-1 day** (detected one day after onset) |
+| red_sea_2023 first warning / lead | 2023-11-15 / ≥ 30 days (censored) | 2023-11-15 / ≥ 30 days (censored) |
+| red_sea_2023 lead vs first attack (2023-11-19) | 4 days | 4 days |
+| Lanes warned (both disruptions) | 17/17 | 17/17 |
+| Pre-onset off-target flag days, suez_2021 | 7 | 0 |
+| Control days flagged | 45/60 | 22/60 |
+| **False-alarm rate** | **0.75** (4 episodes) | **0.367** (3 episodes) |
+| False-alarm rate, all 17 India-Europe/Ireland lanes | 0.75 to 0.82 | 0.367 to 0.467 |
+
+Reading:
+- The two rules halve the false-alarm rate without losing either disruption, but 0.367 is still too high
+  for an operational alert.
+- The v1 Suez "same-day detection" was partly luck: on 2021-03-23 the score crossed τ only because an
+  unrelated `CTRY:IN` story added weight (v1 score 0.631 = Suez evidence + India country hit). With that
+  removed, Suez evidence alone reaches 0.36 on onset day and 0.795 the next day.
+- Every remaining control-window flag is on a real route node (RED_SEA 22 days, SUEZ_CANAL 10,
+  BAB_EL_MANDEB 8): 2019-09 Houthi threats and a foiled Red Sea attack; 2022-09 a ship briefly aground in
+  the Suez Canal and the Iranian sea-drone incident. These are real but minor incidents that, per the
+  spec, count as false alarms. Keyword rules cannot tell "briefly blocked" from "closed"; that needs the
+  LLM extractor's severity judgement (R7) or a carrier-action signal.
+
 ## R7. Backtest with qwen2.5:3b extractor (incomplete)
 - Date: 2026-10-02
 - Command: `uv run python -m chainwatch.backtest.run --extractor ollama:qwen2.5:3b --prefilter --offline`

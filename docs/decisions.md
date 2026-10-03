@@ -71,3 +71,11 @@ Each entry: choice, alternatives, reason.
 - Alternatives: LangGraph / LangChain agents; native tool-calling APIs.
 - Reason: 3B local models handle a simple JSON protocol better than nested tool schemas, the loop stays
   inspectable, and guard rails make the output safe even when the model is weak.
+## D14. Backtest v2 rules: drop country hits, dedupe stories (no parameters)
+- Choice: ignore `CTRY:XX` hits in the flag score; one hit per (date, event type, node) at max weight.
+- Alternatives: down-weight country hits by a factor; cluster stories by title similarity; raise τ.
+- Reason: parameter-free rules leave nothing to tune on backtest data; a weight or τ change would invite
+  fitting the control windows. Pre-registered in `docs/backtest-spec-v2.md`, reported separately (R6b).
+## D15. MIT licence
+- Choice: MIT. Alternatives: Apache-2.0 (patent grant, longer), no licence (all rights reserved).
+- Reason: simplest permissive licence, common for portfolio projects; easy for the owner to change.

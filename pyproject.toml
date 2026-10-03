@@ -3,6 +3,7 @@ name = "chainwatch"
 version = "0.1.0"
 description = "AI early-warning system for supply chain disruptions on India to Europe trade lanes."
 readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.11"
 dependencies = [
     "pydantic>=2.6",

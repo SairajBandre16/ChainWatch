@@ -15,4 +15,5 @@ Fill `{placeholders}` only from `docs/results.md`. Filled values below are alrea
 4. Built a tool-calling agent with code-level guard rails (citation checks, recomputed scores, route
    feasibility) and a spec-first backtest on {164} days of GDELT news: flagged the 2023 Red Sea crisis
    {≥30} days before carrier suspensions and the 2021 Suez blockage on day {0}, and diagnosed a {0.75}
-   false-alarm rate to syndicated duplicate stories ({pending: false-alarm rate after dedup run}).
+   false-alarm rate to syndicated duplicate stories and country-level matches; a pre-registered post-hoc
+   fix cut it to {0.367} without missing either disruption.

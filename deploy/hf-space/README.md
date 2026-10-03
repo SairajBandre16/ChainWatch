@@ -6,6 +6,7 @@ colorTo: gray
 sdk: docker
 app_port: 7860
 pinned: false
+license: mit
 short_description: Supply chain disruption early warning, India to Europe lanes
 ---
 
