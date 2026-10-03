@@ -136,3 +136,7 @@ accuracy is claimed until 100+ items are labeled (see `docs/labeling-guide.md`).
 
 `docs/results.md` (every number) · `docs/backtest-spec.md` · `docs/decisions.md` ·
 `docs/learning-notes.md` · `docs/writeup.md` · `docs/deployment.md` · `PROGRESS.md`
+
+## Licence
+
+MIT, see [LICENSE](LICENSE). Third-party data keeps its own licence (see Data sources).

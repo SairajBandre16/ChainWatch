@@ -23,7 +23,7 @@ From this repo into the Space clone:
 - `Dockerfile`, `.dockerignore`, `pyproject.toml`, `uv.lock`
 - `src/`, `app/`, `data/processed/`, `data/sample/`, `data/eval/`, `docs/`
 - `deploy/hf-space/README.md` -> the Space's `README.md` (it carries the Space metadata: `sdk: docker`,
-  `app_port: 7860`). Add a licence line if you choose one for the project.
+  `app_port: 7860`). The licence line (`license: mit`) is already set.
 
 Then `git add . && git commit -m "Deploy ChainWatch" && git push`. The Space builds the image and starts.
 

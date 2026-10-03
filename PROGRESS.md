@@ -39,6 +39,10 @@ Last updated: 2026-10-03
 - [x] 6.3 Resume material: docs/resume-bullets.md, 4 bullets, numbers only from results.md, pending items marked (4e26184)
 - [x] 6.4 Owner checklist: below
 
+### Post-plan (branch `phase/7-backtest-v2`)
+- [x] 7.1 Backtest v2 (post-hoc): rules pre-registered in docs/backtest-spec-v2.md (1bdb376) before running; `--scoring v2` drops country hits and dedupes stories; false-alarm rate 0.75 -> 0.367, Red Sea lead >=30 d, Suez -1 d (results R6b)
+- [x] 7.2 Licence: MIT (LICENSE, pyproject, HF Space metadata, README; D15)
+
 ## Phase summaries
 
 ### Phase 1: extraction (merged)
@@ -89,13 +93,13 @@ Last updated: 2026-10-03
 2. **Finish the LLM backtest (optional, ~20 h CPU).** Run
    `uv run python -m chainwatch.backtest.run --extractor ollama:qwen2.5:3b --prefilter --offline`
    overnight; it resumes from `data/raw/backtest/qwen2.5-3b__prefilter/`. Then log R7 results.
-3. **Decide on a post-hoc backtest fix.** Story-level dedupe and down-weighting country-level matches
-   would address the 0.75 false-alarm rate; it must be reported as a separate labeled run (spec rules).
+3. ~~Decide on a post-hoc backtest fix~~ Done 2026-10-03 as R6b (country drop + story dedupe,
+   pre-registered): false-alarm rate 0.367. Review `docs/backtest-spec-v2.md` and R6b.
 4. **DataCo data:** nothing to do; it downloads from Mendeley without login (D9).
 5. **Check the dashboard by eye:** `uv run streamlit run app/main.py`, click every tab; take the 4
    screenshots listed in the README.
 6. **Record a demo** (map -> brief -> backtest tab), 1-2 minutes.
-7. **Choose a licence** for the repo (none is set) and add it to the README and HF Space metadata.
+7. ~~Choose a licence~~ MIT added 2026-10-03 (D15). Change it if you prefer another.
 8. ~~Push to GitHub~~ Done 2026-10-03: https://github.com/SairajBandre16/ChainWatch (public, `main` only; CI green on first push).
 9. **Deploy** to Hugging Face Spaces following `docs/deployment.md`, then add the URL to the README.
 10. **Fill resume bullets** in `docs/resume-bullets.md` once items 1-3 produce numbers.
@@ -106,7 +110,8 @@ Last updated: 2026-10-03
   `uv run python -m chainwatch.extraction.eval import-csv`. Until then extraction metrics are "pending labels".
 
 ## Decisions pending review
-- Backtest false-alarm rate 0.75 with the keyword extractor; a post-hoc dedupe/country-weight fix would be a separate labeled run (R6).
+- Backtest false-alarm rate 0.75 (R6, frozen spec); post-hoc v2 brings it to 0.367 but Suez detection slips to -1 day (R6b). v2 rules are D14.
+- Licence chosen as MIT (D15) and copyright holder written as "Sairaj Bandre"; edit LICENSE if wrong.
 - Graph is a schematic sea network (D7); distances are great-circle approximations.
 - GDELT DOC API returns HTTP 429 from this machine; live news uses RSS, history uses GDELT daily event files (D4).
 - Local model: `qwen2.5:3b` (already installed) is the default instead of `qwen2.5:7b` from the spec. See `docs/decisions.md`.
