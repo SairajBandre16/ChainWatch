@@ -57,6 +57,7 @@ uv run python -m chainwatch.forecast.train                        # forecast met
 uv run python -m chainwatch.forecast.explain                      # SHAP plots (R4)
 uv run python -m chainwatch.agent.run --provider ollama --model qwen2.5:3b --save   # agent (R5)
 uv run python -m chainwatch.backtest.run                          # backtest (R6)
+uv run python -m chainwatch.backtest.run --scoring v2             # post-hoc v2 scoring (R6b)
 ```
 
 Docker: `docker build -t chainwatch . && docker run -p 7860:7860 chainwatch`.
@@ -82,6 +83,11 @@ All numbers come from runs logged in [`docs/results.md`](docs/results.md) (run i
 | Red Sea crisis (carriers suspend transits) | 2023-12-15 | 2023-11-15 | ≥ 30 days (censored at window start) |
 | Quiet control periods (60 days) | – | 45 days flagged | **false-alarm rate 0.75** |
 
+Post-hoc v2 scoring [R6b] (rules pre-registered in `docs/backtest-spec-v2.md` before running: drop
+country-level matches, count each story once): false-alarm rate **0.75 -> 0.367**, Red Sea lead time
+unchanged (≥ 30 days), Suez detected **one day after** onset (-1 day). Optimistic, because the rules
+were chosen after inspecting the v1 control windows.
+
 **Graph** [R2, R2c]: a Red Sea event exposes 22 of 23 lanes; the Cape of Good Hope detour adds
 4,540 nm (+13.5 days at 14 knots) to Nhava Sheva to Rotterdam. Event-to-graph link rate on sample events: 0.857 to 0.875.
 
@@ -97,7 +103,9 @@ accuracy is claimed until 100+ items are labeled (see `docs/labeling-guide.md`).
 
 - **The backtest's false-alarm rate (0.75) makes the keyword-based system unusable as is.** Two causes
   found: country-level matches ("India" + any attack keyword) and syndicated copies of one story being
-  counted as independent evidence in `1 - prod(1 - w)`. Fixing them would be a new, labeled post-hoc run.
+  counted as independent evidence in `1 - prod(1 - w)`. A labeled post-hoc run fixing both (R6b) brings it
+  to 0.367, still too high; the remaining flags are real minor incidents (a ship briefly aground in Suez,
+  Houthi threats) that keyword rules cannot tell apart from closures.
 - **The LLM backtest did not finish.** qwen2.5:3b on a laptop CPU needs roughly 20 hours for the 8,773
   prefiltered items; it resumes from cache (`docs/results.md`, R7).
 - **Small LLMs make plain mistakes:** qwen labeled tanker attacks as severe weather; llama invented a port

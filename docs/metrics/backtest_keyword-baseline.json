@@ -1,6 +1,7 @@
 {
  "extractor": "keyword-baseline",
  "prefilter": false,
+ "scoring": "v1",
  "disruptions": {
   "suez_2021": {
    "primary_signals": [
