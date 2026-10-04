@@ -28,7 +28,7 @@ Last updated: 2026-10-04
   content unchanged); `import-csv` skips `draft_unconfirmed` rows and keeps `label_source`; `score`
   also prints the subset without accepted drafts (D16). 13 tests. Dry run qwen2.5:3b on 5 rows: 35 s,
   all 5 drafted "no" (freight-market stories) -> `data/eval/label_assist_preview.csv` (gitignored).
-  Interactive run on the real CSV not exercised by Claude; owner does that.
+  Interactive run on the real CSV not exercised by Claude; owner does that. (6bb08f9)
 
 ### Phase 2: Knowledge graph (branch `phase/2-graph`)
 - [x] 2.1 Reference data: 58 ports, 35 waypoints (10 chokepoints), 99 sea legs, 23 lanes; validated by tests (828a359)
