@@ -185,6 +185,7 @@ uv run streamlit run app/main.py                          # dashboard
 uv run python -m chainwatch.ingest.run --write-sample     # fetch news (RSS + GDELT)
 uv run python -m chainwatch.extraction.run --provider ollama --model qwen2.5:3b   # extraction
 uv run python -m chainwatch.extraction.eval template|import-csv|score --pred <file>  # eval
+uv run python -m chainwatch.extraction.label_assist [--dry-run --limit 5 | stats]  # assisted labeling
 uv run python -m chainwatch.graph.linking                 # link-rate report
 uv run python -m chainwatch.forecast.train                # forecast models + metrics
 uv run python -m chainwatch.forecast.explain              # SHAP plots

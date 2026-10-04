@@ -79,3 +79,10 @@ Each entry: choice, alternatives, reason.
 ## D15. MIT licence
 - Choice: MIT. Alternatives: Apache-2.0 (patent grant, longer), no licence (all rights reserved).
 - Reason: simplest permissive licence, common for portfolio projects; easy for the owner to change.
+## D16. Assisted labeling with disclosed provenance
+- Choice: `label_assist` drafts each label with qwen2.5:3b, the owner accepts/edits/retypes it; every row
+  records `label_source` (accepted/edited/manual/blank = hand CSV) and `draft_model`.
+- Alternatives: blank-template hand labeling only (slow); draft with a model not under evaluation (needs
+  a paid or rate-limited API); blind first pass before showing the draft (more prompts per item).
+- Reason: owner request to cut labeling time. Drafts anchor the labeler and flatter the drafting model,
+  so the scorer must also report the non-`accepted` subset and the write-up must state the process.

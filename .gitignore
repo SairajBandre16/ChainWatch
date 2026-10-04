@@ -19,6 +19,7 @@ dist/
 # Data and caches (raw downloads are documented, not committed)
 data/raw/
 data/cache/
+data/eval/label_assist_preview.csv
 .cache/
 
 # Models
