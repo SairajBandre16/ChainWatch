@@ -53,6 +53,8 @@ class GoldItem(BaseModel):
     news_id: str
     is_disruption: bool
     events: list[GoldEvent] = Field(default_factory=list)
+    # How the label was made (assisted tool): accepted / edited / manual; None = hand-labeled CSV.
+    label_source: str | None = None
 
 
 def normalize_location(text: str) -> str:
@@ -142,7 +144,11 @@ def load_gold(path: Path = LABELS_PATH) -> list[GoldItem]:
 TEMPLATE_COLUMNS = [
     "news_id", "source", "published", "title", "text", "url",
     "is_disruption", "event_type", "location", "country_code", "port_code", "severity", "notes",
+    "label_source", "draft_model",
 ]  # fmt: skip
+# `label_source` / `draft_model` are filled by the assisted labeling tool (label_assist.py).
+# Rows marked DRAFT_ONLY are unconfirmed model drafts from a dry run and are never imported.
+DRAFT_ONLY = "draft_unconfirmed"
 
 
 def label_pool() -> list[NewsItem]:
@@ -188,11 +194,16 @@ def import_csv(csv_path: Path = TEMPLATE_PATH, out_path: Path = LABELS_PATH) -> 
     with csv_path.open(encoding="utf-8-sig", newline="") as fh:
         for row in csv.DictReader(fh):
             flag = (row.get("is_disruption") or "").strip().lower()
-            if not flag:
+            if not flag or (row.get("label_source") or "").strip() == DRAFT_ONLY:
                 continue
             news_id = row["news_id"].strip()
             item = items.setdefault(
-                news_id, GoldItem(news_id=news_id, is_disruption=flag in {"1", "y", "yes", "true"})
+                news_id,
+                GoldItem(
+                    news_id=news_id,
+                    is_disruption=flag in {"1", "y", "yes", "true"},
+                    label_source=_blank(row.get("label_source")),
+                ),
             )
             if item.is_disruption and _blank(row.get("event_type")):
                 severity = _blank(row.get("severity"))
@@ -233,7 +244,13 @@ def main() -> None:
             print(f"Only {len(gold)} labeled items (need 100+). Results are PENDING LABELS.")
             if not gold:
                 return
-        print(json.dumps(score(gold, load_records(args.pred)), indent=1))
+        records = load_records(args.pred)
+        print(json.dumps(score(gold, records), indent=1))
+        # Drafted-and-accepted labels may flatter the drafting model (D16): also score the rest.
+        unanchored = [g for g in gold if g.label_source != "accepted"]
+        if len(unanchored) < len(gold):
+            print(f"\nSubset without accepted drafts ({len(unanchored)} items):")
+            print(json.dumps(score(unanchored, records), indent=1))
 
 
 if __name__ == "__main__":

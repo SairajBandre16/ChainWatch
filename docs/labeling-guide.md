@@ -3,7 +3,38 @@
 Goal: 100+ hand-labeled news items so extraction quality can be measured honestly (step 1.4).
 Time needed: roughly 1 to 2 hours for 118 items.
 
-## Steps
+Two ways to label: assisted (an LLM drafts, you confirm) or fully by hand in a spreadsheet. Both
+write the same CSV and can be mixed. The `label_source` column records which way each item was done.
+
+## Option A: assisted labeling (faster)
+
+```bash
+uv run python -m chainwatch.extraction.label_assist --dry-run --limit 5   # optional preview first
+uv run python -m chainwatch.extraction.label_assist                       # label; Ctrl+C or q to stop
+uv run python -m chainwatch.extraction.label_assist stats                 # counts per label_source
+```
+
+For each unlabeled item the tool shows the article, a draft label from qwen2.5:3b (same prompt as the
+extraction pipeline), and asks:
+
+- `a` accept the draft as is
+- `e` edit: every field is asked again with the draft as default (Enter keeps, `-` clears)
+- `m` manual: every field is asked with no defaults
+- `s` skip, `q` quit
+
+Nothing is written without your choice. Rows you already labeled are never touched. Progress is saved
+after every item, so re-running resumes where you stopped. Close the CSV in Excel while the tool runs.
+
+The dry run writes `data/eval/label_assist_preview.csv` (gitignored) and never changes the template;
+its rows are marked `draft_unconfirmed` and are never imported as labels.
+
+**Bias warning.** Seeing a draft pulls your answer toward it, and qwen2.5:3b is one of the models being
+scored. Read the article *before* the draft, and use `e` freely. Results will be reported separately
+for `accepted` vs `edited`/`manual` items (D16).
+
+## Option B: label by hand in a spreadsheet
+
+### Steps
 
 1. Open `data/eval/labeling_template.csv` in Excel or LibreOffice (it is UTF-8 with BOM).
    If you want a fresh one: `uv run python -m chainwatch.extraction.eval template --n 120`.
@@ -12,7 +43,8 @@ Time needed: roughly 1 to 2 hours for 118 items.
 4. Run `uv run python -m chainwatch.extraction.eval import-csv`. This writes `data/eval/extraction_labels.jsonl`.
 5. Commit both files. Tell Claude "labels are done" and it will run the scorer for every model.
 
-Do **not** look at model outputs in `data/processed/extractions/` while labeling. That biases the labels.
+Do **not** look at model outputs in `data/processed/extractions/` while labeling by hand. That biases
+the labels. Leave `label_source` and `draft_model` blank (they mean "labeled by hand").
 
 ## Columns to fill
 

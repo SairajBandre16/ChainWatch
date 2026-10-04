@@ -148,3 +148,12 @@ Plain-English notes on the concepts each phase uses: what it is, why it is used 
   run it once, keep the old run, and say the new number is optimistic because the fix was inspired by the
   same data. Here it halved the false-alarm rate (0.75 -> 0.367) and also revealed that the v1 Suez
   "same-day" detection had been helped by an unrelated story.
+
+## Assisted labeling and anchoring bias (step 1.4b)
+- **What:** a model drafts the label; a human accepts, edits or retypes it. Common in industry
+  ("model-in-the-loop" annotation) because confirming is faster than typing.
+- **Catch:** people tend to accept what they are shown (anchoring). If the drafting model is also a model
+  you evaluate, its scores go up for a reason that has nothing to do with quality.
+- **Mitigations used:** record per item how the label was made (`label_source`, `draft_model`); report
+  metrics on the edited/manual subset too; read the article before the draft. Stronger options: draft
+  with a model you do not evaluate, or label a random slice fully blind and compare agreement.
